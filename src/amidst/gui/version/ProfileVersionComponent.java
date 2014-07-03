@@ -19,14 +19,14 @@ import amidst.version.MinecraftProfile;
 import amidst.version.ProfileUpdateEvent;
 import amidst.version.MinecraftProfile.Status;
 
-public class LocalVersionComponent extends VersionComponent {
+public class ProfileVersionComponent extends VersionComponent {
 	protected MinecraftProfile profile;
 	protected int oldWidth = 0;
 	protected String drawName;
 	private String name;
 	
 	
-	public LocalVersionComponent(MinecraftProfile profile) {
+	public ProfileVersionComponent(MinecraftProfile profile) {
 		this.profile = profile;
 		drawName = profile.getProfileName();
 		name = "local:" + profile.getProfileName();
