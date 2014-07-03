@@ -1,7 +1,12 @@
-AMIDST
-======
+AMIDST for Overworld Map
+========================
 
-Advanced Minecraft Interface and Data/Structure Tracking
+I'm seeing if I can modify AMIDST to generate backgrounds for 
+the map system at http://buildwithblocks.info.
+
+Hopefully users will be able to generate a background (such as https://i.imgur.com/7Kez7Kg.png)
+with nothing more than the seed.
+
 
 License and warranty
 --------------------
