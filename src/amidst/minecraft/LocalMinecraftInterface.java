@@ -32,7 +32,7 @@ public class LocalMinecraftInterface implements IMinecraftInterface {
 				isLoadedField.setAccessible(true);
 				isLoadedField.set(null, true);
 			} catch (Exception e) {
-				Log.crash(e, "Unable to use 14w02a hack.");
+				Log.w("Unable to use 14w02a hack... continuing as this is known to fail in some versions - 1.6.2 etc");
 			}
 		}
 		

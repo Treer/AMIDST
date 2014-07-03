@@ -17,6 +17,7 @@ import amidst.Util;
 import amidst.logging.Log;
 import amidst.version.LatestVersionList;
 import amidst.version.MinecraftProfile;
+import amidst.version.MinecraftVersion;
 import amidst.version.VersionFactory;
 
 public class VersionSelectWindow extends JFrame {
@@ -48,15 +49,19 @@ public class VersionSelectWindow extends JFrame {
 			@Override
 			public void run() {
 				versionFactory.scanForProfiles();
-				MinecraftProfile[] localVersions = versionFactory.getProfiles();
+				MinecraftProfile[] profileVersions = versionFactory.getProfiles();
+				versionFactory.scanForLocalVersions();
+				MinecraftVersion[] localVersions = versionFactory.getLocalVersions();
 				String selectedProfile = Options.instance.lastProfile.get();
 				
-				if (localVersions == null) {
+				if (profileVersions == null) {
 					versionSelector.setEmptyMessage("Empty");
 					return;
 				}
+				for (int i = 0; i < profileVersions.length; i++)
+					versionSelector.addVersion(new ProfileVersionComponent(profileVersions[i]));
 				for (int i = 0; i < localVersions.length; i++)
-					versionSelector.addVersion(new LocalVersionComponent(localVersions[i]));
+					versionSelector.addVersion(new LocalVersionComponent(localVersions[i]));				
 				versionSelector.addVersion(new RemoteVersionComponent());
 				
 				if (selectedProfile != null)
