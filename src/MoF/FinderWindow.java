@@ -49,7 +49,7 @@ public class FinderWindow extends JFrame {
 		}
 	}
 	public void setProject(Project ep) {
-		menuBar.mapMenu.setEnabled(true);
+		menuBar.MapMenusEnabled(true);
 		curProject = ep;
 
 		addKeyListener(ep.getKeyListener());

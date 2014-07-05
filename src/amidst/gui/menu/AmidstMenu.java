@@ -40,11 +40,18 @@ import java.util.Random;
 public class AmidstMenu extends JMenuBar {
 	final JMenu fileMenu;
 	//final JMenu scriptMenu;
-	public final JMenu mapMenu; //TODO: protected
+	final JMenu mapMenu; //TODO: protected
 	final JMenu optionsMenu;
 	final JMenu helpMenu;
 	
 	private final FinderWindow window;
+	
+	// Sets whether menu items that require a map are enabled
+	public void MapMenusEnabled(boolean enabled) {
+		
+		mapMenu.setEnabled(enabled);
+		((FileMenu)fileMenu).exportMenu.setEnabled(enabled);
+	}
 	
 	public AmidstMenu(FinderWindow window) {
 		this.window = window;
@@ -56,9 +63,14 @@ public class AmidstMenu extends JMenuBar {
 	}
 	
 	private class FileMenu extends JMenu {
+		
+		public final JMenu exportMenu;
+		
 		private FileMenu() {
 			super("File");
 			setMnemonic(KeyEvent.VK_F);
+			
+			exportMenu = new ExportMenu();			
 			
 			add(new JMenu("New") {{
 				setMnemonic(KeyEvent.VK_N);
@@ -85,6 +97,9 @@ public class AmidstMenu extends JMenuBar {
 					}
 				});
 			}});
+			
+			add(exportMenu);
+			add(new JSeparator());
 			
 			add(new JMenuItem("Exit") {{
 				addActionListener(new ActionListener() {
@@ -258,6 +273,63 @@ public class AmidstMenu extends JMenuBar {
 						}
 					}
 				});
+			}
+		}
+		
+		private class ExportMenu extends JMenu {
+			private ExportMenu() {
+				super("Export");
+				
+				setEnabled(false); // Disabled until the map is available
+				
+				add(new ExportOceanMaskMenuItem());
+				add(new ExportLocationsListMenuItem());
+			}
+				
+			private class ExportOceanMaskMenuItem extends JMenuItem {
+				private ExportOceanMaskMenuItem() {
+					super("Oceans mask");
+					
+					addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							JFileChooser fc = new JFileChooser();
+							fc.setFileFilter(new PNGFileFilter());
+							fc.setAcceptAllFileFilterUsed(false);
+							int returnVal = fc.showSaveDialog(window);
+							
+							if (returnVal == JFileChooser.APPROVE_OPTION) {
+								String s = fc.getSelectedFile().toString();
+								if (!s.toLowerCase().endsWith(".png"))
+									s += ".png";
+								window.curProject.map.saveOceanToFile(new File(s));
+							}
+						}
+					});
+				}
+			}
+	
+			private class ExportLocationsListMenuItem extends JMenuItem {
+				private ExportLocationsListMenuItem() {
+					super("Locations");
+					
+					addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							JFileChooser fc = new JFileChooser();
+							fc.setFileFilter(new LocationsFileFilter());
+							fc.setAcceptAllFileFilterUsed(false);
+							int returnVal = fc.showSaveDialog(window);
+							
+							if (returnVal == JFileChooser.APPROVE_OPTION) {
+								String s = fc.getSelectedFile().toString();
+								if (!s.toLowerCase().endsWith(".txt") && !s.toLowerCase().endsWith(".csv"))
+									s += ".txt";
+								//window.curProject.map.saveToFile(new File(s));
+							}
+						}
+					});
+				}
 			}
 		}
 	}

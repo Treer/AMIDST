@@ -3,6 +3,7 @@ package MoF;
 
 import amidst.Options;
 import amidst.gui.menu.PlayerMenuItem;
+import amidst.gui.menu.AmidstMenu.DisplayingCheckbox;
 import amidst.logging.Log;
 import amidst.map.FragmentManager;
 import amidst.map.IconLayer;
@@ -14,6 +15,7 @@ import amidst.map.MapObjectPlayer;
 import amidst.map.layers.BiomeLayer;
 import amidst.map.layers.GridLayer;
 import amidst.map.layers.NetherFortressLayer;
+import amidst.map.layers.OceanMaskLayer;
 import amidst.map.layers.PlayerLayer;
 import amidst.map.layers.SlimeLayer;
 import amidst.map.layers.SpawnLayer;
@@ -61,7 +63,8 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 	private static final long serialVersionUID = -8309927053337294612L;
 	// TODO: This should likely be moved somewhere else.
 	private static FragmentManager fragmentManager;
-	private static PlayerLayer playerLayer;
+	private static PlayerLayer    playerLayer;	
+	private static OceanMaskLayer oceanMaskLayer;
 	
 	private Widget mouseOwner;
 	private static BufferedImage
@@ -77,7 +80,8 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 		fragmentManager = new FragmentManager(
 			new ImageLayer[] {
 				new BiomeLayer(),
-				new SlimeLayer()
+				new SlimeLayer(),
+				oceanMaskLayer = new OceanMaskLayer()
 			},
 			new LiveLayer[] {
 				new GridLayer()
@@ -352,6 +356,51 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 		g2d.dispose();
 		image.flush();
 	}
+
+	public void saveLocationsToFile(File f) {
+
+		for (Widget widget : widgets) {
+			
+		};
+		
+	}
+	
+	public void saveOceanToFile(File f) {
+		// todo: make it 1bpp - http://www.coderanch.com/t/340426/GUI/java/BufferedImage-bit-pixel
+		int oceanMaskSize = 12800;
+		
+		//worldMap.moveToOrigin();
+		//worldMap.centerOn(0, 0);
+		//worldMap.setZoom(0.1);
+		//worldMap.width  = (int)(oceanMaskSize * worldMap.getZoom());
+		//worldMap.height = (int)(oceanMaskSize * worldMap.getZoom());
+		
+		BufferedImage image = new BufferedImage(worldMap.width, worldMap.height, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g2d = image.createGraphics();
+		
+		Options.instance.showGrid.set(false);
+		Options.instance.showSlimeChunks.set(false);
+		Options.instance.showVillages.set(false);
+		Options.instance.showTemples.set(false);
+		Options.instance.showStrongholds.set(false);
+		Options.instance.showPlayers.set(false);
+		Options.instance.showNetherFortresses.set(false);
+		Options.instance.showSpawn.set(false);
+				
+		oceanMaskLayer.visible = true;
+		worldMap.draw(g2d, 0);
+		oceanMaskLayer.visible = false;
+
+		try {
+			ImageIO.write(image, "png", f);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		g2d.dispose();
+		image.flush();
+	}
+	
 	
 	@Override
 	public void keyPressed(KeyEvent e) {
