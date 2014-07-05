@@ -8,7 +8,7 @@ public class PNGFileFilter extends FileFilter {
 	public boolean accept(File file) {
 		if (file.isDirectory())
 			return true;
-		String[] st = file.getName().split("/.");
+		String[] st = file.getName().split("\\.");
 		return st[st.length - 1].equalsIgnoreCase("png");
 	}
 	
