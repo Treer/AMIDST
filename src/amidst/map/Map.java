@@ -8,7 +8,7 @@ import amidst.logging.Log;
 import amidst.map.layers.BiomeLayer;
 
 public class Map {
-	public static Map instance = null;
+	//public static Map instance = null;
 	private static final boolean START = true, END = false;
 	private FragmentManager fragmentManager;
 	
@@ -36,7 +36,7 @@ public class Map {
 		start = new Point2D.Double();
 		addStart(0, 0);
 		
-		instance = this;
+		//instance = this;
 	}
 	
 	public void resetImageLayer(int id) {
@@ -54,6 +54,33 @@ public class Map {
 		}
 	}
 	
+	public void requestFragments() {
+		
+		synchronized (drawLock) {
+			// Fragment.SIZE = number of Minecraft-blocks wide/high covered by every Fragment. 
+			// size = width of every Fragment in pixels
+			// width & height = dimensions of rendering, measured in pixels
+			// w & h = number of Fragments required to render the pixel dimensions
+			int size = (int) (Fragment.SIZE * scale);
+			int w = width / size + 2;
+			int h = height / size + 2;
+
+			// When rendering large areas (such as requested by MapExporter) it becomes important 
+			// to not create and remove rows needlessly (cache size gets very large very quick), so 
+			// take start.x and start.y into account before ensuring tileWidth and tileHeight are satisfied.
+			while (start.x >	 0) { start.x -= size; addColumn(START); if (tileWidth  > w) removeColumn(END);   }
+			while (start.x < -size) { start.x += size; addColumn(END);   if (tileWidth  > w) removeColumn(START); }
+			while (start.y >	 0) { start.y -= size; addRow(START);	 if (tileHeight > h) removeRow(END);      }
+			while (start.y < -size) { start.y += size; addRow(END);	     if (tileHeight > h) removeRow(START);    }
+			
+			while (tileWidth <  w) addColumn(END);
+			while (tileWidth >  w) removeColumn(END);
+			while (tileHeight < h) addRow(END);
+			while (tileHeight > h) removeRow(END);
+		}				
+	}
+	
+	
 	public void draw(Graphics2D g, float time) {
 		AffineTransform originalTransform = g.getTransform();
 		if (firstDraw) {
@@ -66,15 +93,7 @@ public class Map {
 			int w = width / size + 2;
 			int h = height / size + 2;
 			
-			while (tileWidth <  w) addColumn(END);
-			while (tileWidth >  w) removeColumn(END);
-			while (tileHeight < h) addRow(END);
-			while (tileHeight > h) removeRow(END);
-			
-			while (start.x >	 0) { start.x -= size; addColumn(START); removeColumn(END);   }
-			while (start.x < -size) { start.x += size; addColumn(END);   removeColumn(START); }
-			while (start.y >	 0) { start.y -= size; addRow(START);	 removeRow(END);      }
-			while (start.y < -size) { start.y += size; addRow(END);	     removeRow(START);    }
+			requestFragments();
 			
 			Fragment frag = startNode;
 			size = Fragment.SIZE;
@@ -285,6 +304,7 @@ public class Map {
 			
 			addStart((int)startX, (int)startY);
 		}
+		firstDraw = false; // No longer needs to be true, as its sole purpose is to ensure centerOn() has been invoked.
 	}
 	
 	public void setZoom(double scale) {

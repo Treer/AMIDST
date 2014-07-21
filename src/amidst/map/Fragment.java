@@ -37,8 +37,8 @@ public class Fragment {
 	
 	public boolean endOfLine = false;
 	
-	private static int[] dataCache = new int[SIZE*SIZE];
-	
+	private static ThreadLocal<int[]> dataCache = new ThreadLocal<int[]>();
+		
 	public Fragment(ImageLayer... layers) {
 		this(layers, null, null);
 	}
@@ -193,7 +193,13 @@ public class Fragment {
 	
 	
 	public static int[] getIntArray() {
-		return dataCache;
+
+		if (dataCache.get() == null) {
+			//Log.i("Creating data cache for thread");
+			dataCache.set(new int[SIZE*SIZE]);
+		};
+		
+		return dataCache.get();
 	}
 	
 	public void removeObject(MapObjectPlayer player) {

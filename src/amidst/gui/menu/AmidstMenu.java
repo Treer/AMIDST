@@ -295,13 +295,13 @@ public class AmidstMenu extends JMenuBar {
 						public void actionPerformed(ActionEvent e) {
 							JFileChooser fc = new JFileChooser();
 							fc.setFileFilter(new PNGFileFilter());
+							fc.setSelectedFile(new File("seed" + Options.instance.seed + ".png"));
 							fc.setAcceptAllFileFilterUsed(false);
 							int returnVal = fc.showSaveDialog(window);
 							
 							if (returnVal == JFileChooser.APPROVE_OPTION) {
 								String s = fc.getSelectedFile().toString();
-								if (!s.toLowerCase().endsWith(".png"))
-									s += ".png";
+								if (!s.toLowerCase().endsWith(".png")) s += ".png";
 								window.curProject.map.saveOceanToFile(new File(s));
 							}
 						}
@@ -318,14 +318,16 @@ public class AmidstMenu extends JMenuBar {
 						public void actionPerformed(ActionEvent e) {
 							JFileChooser fc = new JFileChooser();
 							fc.setFileFilter(new LocationsFileFilter());
+							fc.setSelectedFile(new File("seed" + Options.instance.seed + ".txt"));
 							fc.setAcceptAllFileFilterUsed(false);
 							int returnVal = fc.showSaveDialog(window);
 							
 							if (returnVal == JFileChooser.APPROVE_OPTION) {
 								String s = fc.getSelectedFile().toString();
-								if (!s.toLowerCase().endsWith(".txt") && !s.toLowerCase().endsWith(".csv"))
+								if (!s.toLowerCase().endsWith(".txt") && !s.toLowerCase().endsWith(".csv")) {
 									s += ".txt";
-								//window.curProject.map.saveToFile(new File(s));
+								}
+								window.curProject.map.saveLocationsToFile(new File(s));
 							}
 						}
 					});
@@ -537,7 +539,7 @@ public class AmidstMenu extends JMenuBar {
 					for (int i = 0; i < profileCheckboxes.size(); i++)
 						profileCheckboxes.get(i).setSelected(false);
 					checkBox.setSelected(true);
-					profile.activate();
+					profile.activate(window.curProject.map.getMap());
 				}
 			}
 			private BiomeColorMenu() {

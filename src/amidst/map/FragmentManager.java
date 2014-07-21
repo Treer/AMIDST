@@ -1,6 +1,8 @@
 package amidst.map;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -11,6 +13,7 @@ public class FragmentManager implements Runnable {
 	
 	private Thread currentThread;
 	private boolean running = true;
+    List<FragmentManagerListener> listeners = new ArrayList<FragmentManagerListener>();
 	
 	private Fragment[] fragmentCache;
 	private ConcurrentLinkedQueue<Fragment> fragmentQueue;
@@ -52,6 +55,15 @@ public class FragmentManager implements Runnable {
 		for (IconLayer layer : iconLayers)
 			layer.update(time);
 	}
+	
+    //a way to add someone to the list of catchers
+    public void addListener(FragmentManagerListener toAdd){
+        listeners.add(toAdd);
+    }
+
+    private void doFragmentsLoaded() {
+        for (FragmentManagerListener listener : listeners) listener.FragmentsLoaded();
+    }	
 	
 	public void reset() {
 		running = false;
@@ -114,6 +126,8 @@ public class FragmentManager implements Runnable {
 	public void run() {
 		currentThread.setPriority(Thread.MIN_PRIORITY);
 
+		boolean working = false;
+		
 		while (running) {
 			if(!requestQueue.isEmpty() || !recycleQueue.isEmpty()) {
 				if (!requestQueue.isEmpty()) {
@@ -121,6 +135,7 @@ public class FragmentManager implements Runnable {
 						Fragment frag = requestQueue.poll();
 						if (frag.isActive && !frag.isLoaded) {
 							frag.load();
+							working = true;
 							sleepTick++;
 							if (sleepTick == 10) {
 								sleepTick = 0;
@@ -137,10 +152,16 @@ public class FragmentManager implements Runnable {
 						Fragment frag = recycleQueue.poll();
 						frag.recycle();
 						fragmentQueue.offer(frag);
+						working = true;
 					}
 				}
 			} else {
 				sleepTick = 0;
+				if (working) {
+					// all the work must have been completed
+					working = false;
+					doFragmentsLoaded();					
+				}								
 				try {
 					Thread.sleep(2L);
 				} catch (InterruptedException ignored) {}

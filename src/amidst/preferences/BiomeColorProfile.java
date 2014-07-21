@@ -88,7 +88,11 @@ public class BiomeColorProfile {
 		return false;
 	}
 	
-	public void activate() {
+	
+	/** 
+	 * You will need to call Map.resetFragments() after invoking this if you don't
+	 * pass the map as an argument */
+	public void activate(amidst.map.Map worldMap) {
 		Options.instance.biomeColorProfile = this;
 		Log.i("Biome color profile activated.");
 		for (int i = 0; i < Biome.biomes.length; i++) {
@@ -96,8 +100,13 @@ public class BiomeColorProfile {
 				Biome.biomes[i].color = colorArray[i];
 			}
 		}
+		/* Commented out because I don't want the map to be a singleton as there
+		 * are now multiple instances of it. Whatever invokes this method can pass
+		 * us the map, or invoke resetFragments() itself.		
 		if (amidst.map.Map.instance != null)
 			amidst.map.Map.instance.resetFragments();
+		*/
+		if (worldMap != null) worldMap.resetFragments();
 	}
 	
 	

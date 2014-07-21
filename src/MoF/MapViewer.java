@@ -51,6 +51,11 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferByte;
+import java.awt.image.IndexColorModel;
+import java.awt.image.Raster;
+import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -64,7 +69,6 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 	// TODO: This should likely be moved somewhere else.
 	private static FragmentManager fragmentManager;
 	private static PlayerLayer    playerLayer;	
-	private static OceanMaskLayer oceanMaskLayer;
 	
 	private Widget mouseOwner;
 	private static BufferedImage
@@ -80,8 +84,7 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 		fragmentManager = new FragmentManager(
 			new ImageLayer[] {
 				new BiomeLayer(),
-				new SlimeLayer(),
-				oceanMaskLayer = new OceanMaskLayer()
+				new SlimeLayer()
 			},
 			new LiveLayer[] {
 				new GridLayer()
@@ -106,6 +109,7 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 	private Point lastMouse;
 	public Point lastRightClick = null;
 	private Point2D.Double panSpeed;
+	private MapExporter exporter = new MapExporter();	
 	
 	private static int zoomLevel = 0, zoomTicksRemaining = 0;
 	private static double targetZoom = 0.25f, curZoom = 0.25f;
@@ -358,47 +362,11 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 	}
 
 	public void saveLocationsToFile(File f) {
-
-		for (Widget widget : widgets) {
-			
-		};
-		
+		exporter.saveLocationsToFile(f);		
 	}
 	
 	public void saveOceanToFile(File f) {
-		// todo: make it 1bpp - http://www.coderanch.com/t/340426/GUI/java/BufferedImage-bit-pixel
-		int oceanMaskSize = 12800;
-		
-		//worldMap.moveToOrigin();
-		//worldMap.centerOn(0, 0);
-		//worldMap.setZoom(0.1);
-		//worldMap.width  = (int)(oceanMaskSize * worldMap.getZoom());
-		//worldMap.height = (int)(oceanMaskSize * worldMap.getZoom());
-		
-		BufferedImage image = new BufferedImage(worldMap.width, worldMap.height, BufferedImage.TYPE_INT_ARGB);
-		Graphics2D g2d = image.createGraphics();
-		
-		Options.instance.showGrid.set(false);
-		Options.instance.showSlimeChunks.set(false);
-		Options.instance.showVillages.set(false);
-		Options.instance.showTemples.set(false);
-		Options.instance.showStrongholds.set(false);
-		Options.instance.showPlayers.set(false);
-		Options.instance.showNetherFortresses.set(false);
-		Options.instance.showSpawn.set(false);
-				
-		oceanMaskLayer.visible = true;
-		worldMap.draw(g2d, 0);
-		oceanMaskLayer.visible = false;
-
-		try {
-			ImageIO.write(image, "png", f);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		g2d.dispose();
-		image.flush();
+		exporter.saveOceanToFile(f);
 	}
 	
 	

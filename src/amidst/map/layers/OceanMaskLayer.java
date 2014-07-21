@@ -1,18 +1,15 @@
 package amidst.map.layers;
 
-import MoF.MapViewer;
-import amidst.Options;
 import amidst.Util;
 import amidst.logging.Log;
 import amidst.map.Fragment;
-import amidst.map.ImageLayer;
 import amidst.minecraft.Biome;
 
 public class OceanMaskLayer extends BiomeLayer {
 
 	public static int oceanColor = Util.makeColor(0, 0, 0);
 	public static int landColor = Util.makeColor(255, 255, 255);
-	public static boolean visible;
+	public boolean visible;
 
 	static boolean[] waterBiome = new boolean[Biome.biomes.length];
 	
