@@ -283,7 +283,8 @@ public class AmidstMenu extends JMenuBar {
 				setEnabled(false); // Disabled until the map is available
 				
 				add(new ExportOceanMaskMenuItem());
-				add(new ExportLocationsListMenuItem());
+				add(new ExportOverworldLocationsListMenuItem());
+				add(new ExportNetherLocationsListMenuItem());
 			}
 				
 			private class ExportOceanMaskMenuItem extends JMenuItem {
@@ -309,8 +310,8 @@ public class AmidstMenu extends JMenuBar {
 				}
 			}
 	
-			private class ExportLocationsListMenuItem extends JMenuItem {
-				private ExportLocationsListMenuItem() {
+			private class ExportOverworldLocationsListMenuItem extends JMenuItem {
+				private ExportOverworldLocationsListMenuItem() {
 					super("Locations");
 					
 					addActionListener(new ActionListener() {
@@ -333,6 +334,32 @@ public class AmidstMenu extends JMenuBar {
 					});
 				}
 			}
+			
+			private class ExportNetherLocationsListMenuItem extends JMenuItem {
+				private ExportNetherLocationsListMenuItem() {
+					super("Nether Locations");
+					
+					addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							JFileChooser fc = new JFileChooser();
+							fc.setFileFilter(new LocationsFileFilter());
+							fc.setSelectedFile(new File("nether" + Options.instance.seed + ".txt"));
+							fc.setAcceptAllFileFilterUsed(false);
+							int returnVal = fc.showSaveDialog(window);
+							
+							if (returnVal == JFileChooser.APPROVE_OPTION) {
+								String s = fc.getSelectedFile().toString();
+								if (!s.toLowerCase().endsWith(".txt") && !s.toLowerCase().endsWith(".csv")) {
+									s += ".txt";
+								}
+								window.curProject.map.saveNetherLocationsToFile(new File(s));
+							}
+						}
+					});
+				}
+			}
+			
 		}
 	}
 

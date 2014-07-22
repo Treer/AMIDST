@@ -109,7 +109,7 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 	private Point lastMouse;
 	public Point lastRightClick = null;
 	private Point2D.Double panSpeed;
-	private MapExporter exporter = new MapExporter();	
+	private MapExporter exporter;	
 	
 	private static int zoomLevel = 0, zoomTicksRemaining = 0;
 	private static double targetZoom = 0.25f, curZoom = 0.25f;
@@ -141,6 +141,8 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 		
 		worldMap = new Map(fragmentManager); //TODO: implement more layers
 		worldMap.setZoom(curZoom);
+				
+		exporter = new MapExporter(Options.instance.seed);			
 		
 		widgets.add(new FpsWidget(this).setAnchorPoint(CornerAnchorPoint.BOTTOM_LEFT));
 		widgets.add(new SeedWidget(this).setAnchorPoint(CornerAnchorPoint.TOP_LEFT));
@@ -361,8 +363,12 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 		image.flush();
 	}
 
+	public void saveNetherLocationsToFile(File f) {
+		exporter.saveNetherLocationsToFile(f);		
+	}
+	
 	public void saveLocationsToFile(File f) {
-		exporter.saveLocationsToFile(f);		
+		exporter.saveOverworldLocationsToFile(f);		
 	}
 	
 	public void saveOceanToFile(File f) {

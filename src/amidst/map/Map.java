@@ -3,6 +3,9 @@ package amidst.map;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import amidst.logging.Log;
 import amidst.map.layers.BiomeLayer;
@@ -80,6 +83,22 @@ public class Map {
 		}				
 	}
 	
+	
+	public List<MapObject> getMapObjects() {
+
+		List<MapObject> result = new ArrayList<MapObject>();
+		
+		Fragment frag = startNode;
+		if (frag.hasNext) {
+			while (frag.hasNext) {
+				frag = frag.nextFragment;
+				for(int i = 0; i < frag.objectsLength; i++) {
+					result.add(frag.objects[i]);
+				}
+			}
+		}
+		return result;
+	}
 	
 	public void draw(Graphics2D g, float time) {
 		AffineTransform originalTransform = g.getTransform();

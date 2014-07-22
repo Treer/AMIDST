@@ -10,8 +10,21 @@ import amidst.version.VersionInfo;
 public class MinecraftUtil {
 	private static IMinecraftInterface minecraftInterface;
 	
+	private static Object biomeDataLock = new Object(); 
+	
+	/** Returns a copy of the biome data (threadsafe). */
 	public static int[] getBiomeData(int x, int y, int width, int height) {
-		return minecraftInterface.getBiomeData(x, y, width, height);
+
+		int arrayLength = width * height;
+		int[] result = new int[arrayLength];
+		
+		synchronized (biomeDataLock) {
+			// getBiomeData() reuses the array it returns, so lock against calling it 
+			// again until we have copied the data.
+			int[] biomeData = minecraftInterface.getBiomeData(x, y, width, height);		
+			for (int i = 0; i < arrayLength; i++) result[i] = biomeData[i];
+		}		
+		return result;
 	}
 	
 	public static Point findValidLocation(int searchX, int searchY, int size, List<Biome> paramList, Random random) {

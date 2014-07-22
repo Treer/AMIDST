@@ -1,6 +1,7 @@
 package MoF; // What does MoF stand for??
 
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
@@ -8,7 +9,12 @@ import java.awt.image.IndexColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.imageio.ImageIO;
@@ -22,6 +28,8 @@ import amidst.map.ImageLayer;
 import amidst.map.LayerVisibilityController;
 import amidst.map.LiveLayer;
 import amidst.map.Map;
+import amidst.map.MapMarkers;
+import amidst.map.MapObject;
 import amidst.map.layers.NetherFortressLayer;
 import amidst.map.layers.OceanMaskLayer;
 import amidst.map.layers.SpawnLayer;
@@ -44,13 +52,15 @@ public class MapExporter implements FragmentManagerListener {
 	private boolean mapGenerationComplete = false;
 
 	private FragmentManager fragmentManager;
-	private Map oceanMap;
+	private Map exportMap;
 	private OceanMaskLayer oceanLayer = new OceanMaskLayer();
+	private String seed;
 	
 	
 	enum RequestType {
 		OceanMap,
-		LocationList
+		OverworldLocationList,
+		NetherLocationList
 	}	
 	class ExportRequest {		
 		public RequestType exportType = RequestType.OceanMap;
@@ -88,12 +98,12 @@ public class MapExporter implements FragmentManagerListener {
 		assert !mapGenerationInitiated;
 		mapGenerationInitiated = true;
 				
-		oceanMap.setZoom(1.0 / cExpectedBlocksPerPixel);
-		oceanMap.width  = cExpectedOceamMaskSize;
-		oceanMap.height = cExpectedOceamMaskSize;		
+		exportMap.setZoom(1.0 / cExpectedBlocksPerPixel);
+		exportMap.width  = cExpectedOceamMaskSize;
+		exportMap.height = cExpectedOceamMaskSize;		
 
-		oceanMap.centerOn(0, 0);
-		oceanMap.requestFragments();
+		exportMap.centerOn(0, 0);
+		exportMap.requestFragments();
 		fragmentManager.addListener(this); // to procrastinate: slight race condition here, in theory anyway		
 	}
 	
@@ -113,8 +123,8 @@ public class MapExporter implements FragmentManagerListener {
 		ExportRequest request = requestQueue.poll();
 		while(request != null) {
 			
-			if (request.exportType == RequestType.LocationList) {
-				SaveLocationList(request.exportFile);
+			if (request.exportType == RequestType.OverworldLocationList || request.exportType == RequestType.NetherLocationList) {
+				SaveLocationList(request.exportFile, request.exportType == RequestType.NetherLocationList);
 			} else if (request.exportType == RequestType.OceanMap) {
 				SaveOceanMask(request.exportFile);
 			} else {
@@ -124,15 +134,153 @@ public class MapExporter implements FragmentManagerListener {
 		}
 	}
 
-	private void SaveLocationList(File exportImageFile) {
-		Log.i("Saving locations...");  		
-	
-		/*
-		for (Widget widget : widgets) {
+	/** Used in SaveLocationList() to store extra info about MapObject types */
+	private class LocationTypeInfo {
+		public String locationTypeName;
+		/** -1 if no iconIndex is needed */
+		public int iconIndex;
+		public boolean isSpoilerLocation;
+
+		/** Pass the map if you want village types to be resolved */
+		public String LocationFileEntry(MapObject location, Map map) {
 			
-		};
-		 */
-		Log.i("Not saved - not implemented.");  		
+			String entryType = locationTypeName;
+			
+			if (location.type == MapMarkers.VILLAGE && map != null) {
+				// Try to determine which kind of village
+				String biome = map.getBiomeNameAt(new Point(location.rx, location.ry));
+			
+				if (biome.contains("Desert")) {
+					entryType = "DesertVillage";
+				} else if (biome.contains("Savanna")) {
+					entryType = "SavannaVillage";
+				}			
+			}
+			
+			//String result = locationTypeName + ", " + location.rx + ", " + location.ry;
+			String result = String.format("%1$-16s %2$5d, %3$5d", entryType + ",", location.rx, location.ry);  
+			
+			if (iconIndex >= 0) {
+				result += ", , , , " + iconIndex;				
+			}
+			return result;
+		}
+		
+		public LocationTypeInfo(String locationTypeName, boolean isSpoilerLocation) {
+			this.locationTypeName = locationTypeName;
+			this.iconIndex = -1;
+			this.isSpoilerLocation = isSpoilerLocation;
+		}
+		
+		public LocationTypeInfo(String locationTypeName, int iconIndex, boolean isSpoilerLocation) {
+			this.locationTypeName = locationTypeName;
+			this.iconIndex = iconIndex;
+			this.isSpoilerLocation = isSpoilerLocation;
+		}
+	}
+	
+	private void SaveLocationList(File exportLocationsFile, boolean netherLocations) {
+		Log.i(netherLocations ? "Saving Nether locations..." : "Saving locations...");  	
+		
+		java.util.Map<MapMarkers, LocationTypeInfo> locationTable = new EnumMap<MapMarkers, LocationTypeInfo>(MapMarkers.class);
+
+		if (netherLocations) {
+			locationTable.put(MapMarkers.NETHER_FORTRESS, new LocationTypeInfo("NetherFortress", false));	
+		} else {
+			locationTable.put(MapMarkers.STRONGHOLD, new LocationTypeInfo("Dragon",       true));	
+			locationTable.put(MapMarkers.JUNGLE,     new LocationTypeInfo("JungleTemple", false));	
+			locationTable.put(MapMarkers.DESERT,     new LocationTypeInfo("DesertTemple", false));	
+			locationTable.put(MapMarkers.VILLAGE,    new LocationTypeInfo("Village",      false));	
+			locationTable.put(MapMarkers.WITCH,      new LocationTypeInfo("WitchHut",     false));				
+		}
+				
+		// Sort all the map objects so they will be listed in clumps of the same type. 
+		List<MapObject> mapObjectsUnsorted = exportMap.getMapObjects();
+		List<MapObject> mapObjects = new ArrayList<MapObject>();		
+		for(MapMarkers objectType : MapMarkers.values()) {
+			for(MapObject location : mapObjectsUnsorted) {	
+				if (location.type == objectType) mapObjects.add(location);				
+			}
+		}
+		
+		try {
+			FileWriter file = new FileWriter(exportLocationsFile, false);
+			
+			PrintWriter writer = new PrintWriter(file);
+			
+			// Todo: fix up the project/options code so the text seed is available.
+			writer.print("// This list of ");
+			if (netherLocations) writer.print("Nether ");
+			writer.print("locations was generated for the seed ");
+			writer.println(seed);			
+			writer.println("// It can be used with the online map system provided at http://buildingwithblocks.info");
+			writer.println("// and was generated by a version of AMIDST modified for this purpose.");
+			if (!netherLocations) {
+				writer.println("//");
+				writer.println("// Note, you may find about 10% of the villages, temples, and witch huts");
+				writer.println("// that are predicted here don't exist in the actual game. This happens because");
+				writer.println("// Minecraft eliminates structures in later stages of the terrain generation");
+				writer.println("// process if it finds their surrounds to be unsuitable. In very rare instances");
+				writer.println("// you may find the type of structure listed incorrectly due to its location");
+				writer.println("// being between biomes.");
+			}
+
+			writer.println("");
+			
+			if (!netherLocations) {
+				// Insert the spoiler locations 
+				writer.println("");
+				writer.println("// The following locations are spoilers, which you may wish to remove!");
+				
+				for(MapObject location : mapObjects) {				
+					LocationTypeInfo info = locationTable.get(location.type);
+					if (info != null && info.isSpoilerLocation) {
+						writer.println(info.LocationFileEntry(location, exportMap));
+					}
+				}
+				// Todo: add mushroom islands and ice spikes to the spoilers locations
+			}
+
+			int oceanMaskRange = (cExpectedOceamMaskSize * cExpectedBlocksPerPixel) / 2;
+			int range = 1600;
+			int lastRange = -1;
+			if (netherLocations) {
+				// the oceanMaskRange will only cover an 8th of the area in the Nether
+				range /= 8;
+				oceanMaskRange /= 8;
+			}
+			
+			do {
+				// Insert the remaining locations in clumps based on their range 
+				writer.println("");
+				writer.println("// The following locations fall within a map of range " + Math.min(range, oceanMaskRange));
+
+				if (lastRange <= 0) {
+					writer.println("label, 0, 0, \"\\nOrigin\"");
+				}
+				
+				for(MapObject location : mapObjects) {				
+					LocationTypeInfo info = locationTable.get(location.type);
+					if (info != null && !info.isSpoilerLocation) {
+						int x = Math.abs(location.rx);
+						int y = Math.abs(location.ry);
+						if (x <= range && y <= range && (x > lastRange || y > lastRange)) {						
+							writer.println(info.LocationFileEntry(location, exportMap));
+						}
+					}
+				}
+				
+				lastRange = range;
+				range *= 2;
+			} while (lastRange <= oceanMaskRange); 
+			
+			writer.close();
+			Log.i(netherLocations ? "Saved Nether locations." : "Saved locations.");  	
+			
+			
+		} catch (IOException e) {
+			Log.w("Couldn't save locations to file");
+		}
 	}
 	
 	private void SaveOceanMask(File exportImageFile) {
@@ -141,8 +289,8 @@ public class MapExporter implements FragmentManagerListener {
 		assert mapGenerationComplete;
 		
 		// Create a black&white 1-bit-per-pixel BufferedImage
-		int width = oceanMap.width;
-		int height = oceanMap.height;
+		int width = exportMap.width;
+		int height = exportMap.height;
 		int bytesPerRow = (int)Math.ceil(width / 8.0);  
 	    
 		byte[] rasterData = new byte[height * bytesPerRow];  			      
@@ -169,13 +317,15 @@ public class MapExporter implements FragmentManagerListener {
 	    BufferedImage image = new BufferedImage(blackAndWhite, raster, true, null);  
 		Graphics2D g2d = image.createGraphics();
 				
-		System.out.println("Rendering ocean");
+		Log.i("Rendering ocean...");
 		
+		// Turn off all the layers except the ocean layer before drawing the map
+		// (unfortunately these settings are global)
 		LayerVisibilityController layerVisibilityController = new LayerVisibilityController();
 		layerVisibilityController.StoreState();		
 		try {
 			layerVisibilityController.SetAll(false);
-			oceanMap.draw(g2d, 1);
+			exportMap.draw(g2d, 1);
 		} finally {
 			layerVisibilityController.RestoreState();
 		}
@@ -197,13 +347,19 @@ public class MapExporter implements FragmentManagerListener {
 		addRequest(new ExportRequest(RequestType.OceanMap, f));
 	}
 
-	public void saveLocationsToFile(File f) {		
-		addRequest(new ExportRequest(RequestType.LocationList, f));
+	public void saveOverworldLocationsToFile(File f) {		
+		addRequest(new ExportRequest(RequestType.OverworldLocationList, f));
+	}
+
+	public void saveNetherLocationsToFile(File f) {		
+		addRequest(new ExportRequest(RequestType.NetherLocationList, f));
 	}
 	
-	public MapExporter() {
+	
+	public MapExporter(long seed) {
 		
 		oceanLayer.visible = true;
+		this.seed = String.format("%d", seed);
 		
 		fragmentManager = new FragmentManager(
 			new ImageLayer[] { oceanLayer },
@@ -217,6 +373,6 @@ public class MapExporter implements FragmentManagerListener {
 			}
 		);				
 		
-		oceanMap = new Map(fragmentManager);
+		exportMap = new Map(fragmentManager);
 	}
 }
