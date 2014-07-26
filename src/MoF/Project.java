@@ -32,7 +32,6 @@ public class Project extends JPanel {
 	
 	public Project(String seed) {
 		this(stringToLong(seed));
-		Options.instance.seedText = seed;
 		
 		Google.track("seed/" + seed + "/" + Options.instance.seed);
 	}
@@ -142,8 +141,10 @@ public class Project extends JPanel {
 		long ret;
 		try {
 			ret = Long.parseLong(seed);
+			Options.instance.seedText = null; // overwrite seed from previous map			
 		} catch (NumberFormatException err) { 
 			ret = seed.hashCode();
+			Options.instance.seedText = seed;			
 		}
 		return ret;
 	}

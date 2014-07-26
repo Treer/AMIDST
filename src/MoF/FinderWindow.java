@@ -2,10 +2,13 @@ package MoF;
 
 
 import amidst.Amidst;
+import amidst.Options;
 import amidst.gui.menu.AmidstMenu;
+
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.event.*;
+
 import javax.swing.JFrame;
 
 public class FinderWindow extends JFrame {
@@ -45,6 +48,7 @@ public class FinderWindow extends JFrame {
 			removeKeyListener(curProject.getKeyListener());
 			curProject.dispose();
 			pane.remove(curProject);
+			Options.instance.seedText = null;			
 			System.gc();
 		}
 	}

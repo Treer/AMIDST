@@ -296,7 +296,7 @@ public class AmidstMenu extends JMenuBar {
 						public void actionPerformed(ActionEvent e) {
 							JFileChooser fc = new JFileChooser();
 							fc.setFileFilter(new PNGFileFilter());
-							fc.setSelectedFile(new File("seed" + Options.instance.seed + ".png"));
+							fc.setSelectedFile(new File("seed" + (Options.instance.seedText == null ? String.format("%d", Options.instance.seed) : "_" + Options.instance.seedText) + ".png"));
 							fc.setAcceptAllFileFilterUsed(false);
 							int returnVal = fc.showSaveDialog(window);
 							
@@ -319,7 +319,7 @@ public class AmidstMenu extends JMenuBar {
 						public void actionPerformed(ActionEvent e) {
 							JFileChooser fc = new JFileChooser();
 							fc.setFileFilter(new LocationsFileFilter());
-							fc.setSelectedFile(new File("seed" + Options.instance.seed + ".txt"));
+							fc.setSelectedFile(new File("seed" + (Options.instance.seedText == null ? String.format("%d", Options.instance.seed) : "_" + Options.instance.seedText) + ".txt"));
 							fc.setAcceptAllFileFilterUsed(false);
 							int returnVal = fc.showSaveDialog(window);
 							
@@ -344,7 +344,7 @@ public class AmidstMenu extends JMenuBar {
 						public void actionPerformed(ActionEvent e) {
 							JFileChooser fc = new JFileChooser();
 							fc.setFileFilter(new LocationsFileFilter());
-							fc.setSelectedFile(new File("nether" + Options.instance.seed + ".txt"));
+							fc.setSelectedFile(new File("nether" + (Options.instance.seedText == null ? String.format("%d", Options.instance.seed) : "_" + Options.instance.seedText) + ".txt"));
 							fc.setAcceptAllFileFilterUsed(false);
 							int returnVal = fc.showSaveDialog(window);
 							
