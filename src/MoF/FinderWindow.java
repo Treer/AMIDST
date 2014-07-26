@@ -17,7 +17,7 @@ public class FinderWindow extends JFrame {
 	private final AmidstMenu menuBar;
 	public FinderWindow() {
 		//Initialize window
-		super("Amidst v" + Amidst.version());
+		super("Amidst Exporter v" + Amidst.version());
 		
 		setSize(1000,800);
 		//setLookAndFeel();

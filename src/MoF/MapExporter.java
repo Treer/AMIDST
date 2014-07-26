@@ -19,7 +19,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.imageio.ImageIO;
 
-import amidst.Options;
 import amidst.logging.Log;
 import amidst.map.FragmentManager;
 import amidst.map.FragmentManagerListener;
@@ -36,7 +35,6 @@ import amidst.map.layers.SpawnLayer;
 import amidst.map.layers.StrongholdLayer;
 import amidst.map.layers.TempleLayer;
 import amidst.map.layers.VillageLayer;
-import amidst.map.widget.Widget;
 
 /**
  *  Generates a massive area of the map centered at 0,0 and exports it in a format
@@ -50,6 +48,7 @@ public class MapExporter implements FragmentManagerListener {
 	private ConcurrentLinkedQueue<ExportRequest> requestQueue = new ConcurrentLinkedQueue<ExportRequest>();
 	private boolean mapGenerationInitiated = false;
 	private boolean mapGenerationComplete = false;
+	private boolean processingRequestsInProgress = false;
 
 	private FragmentManager fragmentManager;
 	private Map exportMap;
@@ -122,16 +121,22 @@ public class MapExporter implements FragmentManagerListener {
 		
 		ExportRequest request = requestQueue.poll();
 		while(request != null) {
+			processingRequestsInProgress = true;
 			
-			if (request.exportType == RequestType.OverworldLocationList || request.exportType == RequestType.NetherLocationList) {
-				SaveLocationList(request.exportFile, request.exportType == RequestType.NetherLocationList);
-			} else if (request.exportType == RequestType.OceanMap) {
-				SaveOceanMask(request.exportFile);
-			} else {
-				assert false;		
-			}			
-			request = requestQueue.poll();
+			try {
+				if (request.exportType == RequestType.OverworldLocationList || request.exportType == RequestType.NetherLocationList) {
+					SaveLocationList(request.exportFile, request.exportType == RequestType.NetherLocationList);
+				} else if (request.exportType == RequestType.OceanMap) {
+					SaveOceanMask(request.exportFile);
+				} else {
+					assert false;		
+				}							
+			} catch(Exception e) {
+				Log.e("Export request failed: " + e.getMessage());			
+			}
+			request = requestQueue.poll();						
 		}
+		processingRequestsInProgress = false;
 	}
 
 	/** Used in SaveLocationList() to store extra info about a MapObject type */
@@ -366,6 +371,12 @@ public class MapExporter implements FragmentManagerListener {
 		image.flush();				
 	}
 	
+	public boolean getMapGenerationInProgress() {
+		return mapGenerationInitiated && !mapGenerationComplete;
+	}
+	public boolean getExportRequestInProgress() {
+		return processingRequestsInProgress;
+	}
 		
 	public void saveOceanToFile(File f) {		
 		addRequest(new ExportRequest(RequestType.OceanMap, f));

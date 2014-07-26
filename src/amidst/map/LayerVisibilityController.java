@@ -23,7 +23,8 @@ public class LayerVisibilityController {
 	/** Retrieves the stored values of all the options being controlled */  
 	public void RestoreState() {
 		for(BooleanPrefModel layer : layerList) {
-			layer.set(storedState.getOrDefault(layer, layer.get()));
+			storedState.get(layer);
+			layer.set(storedState.containsKey(layer) ? storedState.get(layer) : layer.get());
 		}
 	}
 	

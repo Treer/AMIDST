@@ -28,6 +28,7 @@ import amidst.map.widget.CursorInformationWidget;
 import amidst.map.widget.DebugWidget;
 import amidst.map.widget.FpsWidget;
 import amidst.map.widget.PanelWidget.CornerAnchorPoint;
+import amidst.map.widget.PleaseWaitWidget;
 import amidst.map.widget.SeedWidget;
 import amidst.map.widget.SelectedObjectWidget;
 import amidst.map.widget.Widget;
@@ -109,7 +110,7 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 	private Point lastMouse;
 	public Point lastRightClick = null;
 	private Point2D.Double panSpeed;
-	private MapExporter exporter;	
+	public MapExporter exporter;	
 	
 	private static int zoomLevel = 0, zoomTicksRemaining = 0;
 	private static double targetZoom = 0.25f, curZoom = 0.25f;
@@ -150,6 +151,7 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 		widgets.add(new SelectedObjectWidget(this).setAnchorPoint(CornerAnchorPoint.TOP_LEFT));
 		widgets.add(new CursorInformationWidget(this).setAnchorPoint(CornerAnchorPoint.TOP_RIGHT));
 		widgets.add(new BiomeToggleWidget(this).setAnchorPoint(CornerAnchorPoint.BOTTOM_RIGHT));
+		widgets.add(new PleaseWaitWidget(this).setAnchorPoint(CornerAnchorPoint.CENTER));
 		widgets.add(BiomeWidget.get(this).setAnchorPoint(CornerAnchorPoint.NONE));
 		addMouseListener(this);
 		addMouseWheelListener(this);
