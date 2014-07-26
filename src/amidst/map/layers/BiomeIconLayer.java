@@ -249,10 +249,11 @@ public class BiomeIconLayer extends IconLayer {
 		}
 		candidates = condensedCandidates;
 		
+		/*
 		Log.i(biomeType + "Candidates: ");
 		for(BiomePointCloud candidate: candidates) {
 			Point center = candidate.getCenter();
 			Log.i("   (" + center.x + ", " + center.y + "), cloud size: " + candidate.points.size());
-		}
+		}*/
 	}
 }
