@@ -218,6 +218,7 @@ public class MapExporter implements FragmentManagerListener {
 			locationTable.put(MapMarkers.ICE_PLAINS_SPIKES, new LocationTypeInfo("IceSpikes", true));				
 			locationTable.put(MapMarkers.MUSHROOM_ISLAND,   new LocationTypeInfo("MushroomIsland", true));				
 			
+			locationTable.put(MapMarkers.SPAWN,      new LocationTypeInfo("Spawn",        false));
 			locationTable.put(MapMarkers.JUNGLE,     new LocationTypeInfo("JungleTemple", false));	
 			locationTable.put(MapMarkers.DESERT,     new LocationTypeInfo("DesertTemple", false));	
 			locationTable.put(MapMarkers.VILLAGE,    new LocationTypeInfo("Village",      false));	
