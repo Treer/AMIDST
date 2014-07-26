@@ -30,7 +30,7 @@ public class FinderWindow extends JFrame {
 		new UpdateManager(this, true).start();
 		setJMenuBar(menuBar = new AmidstMenu(this));
 		setVisible(true);
-		setIconImage(Amidst.icon);
+		setIconImages(Amidst.icons);
 		instance = this;
 		
 		addWindowListener(new WindowAdapter() {

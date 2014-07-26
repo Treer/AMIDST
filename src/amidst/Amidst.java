@@ -3,6 +3,8 @@ package amidst;
 import java.awt.Image;
 import java.io.File;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -23,8 +25,14 @@ public class Amidst {
 	public final static int version_major = 3;
 	public final static int version_minor = 7;
 	public final static String versionOffset = " beta 1";
-	public static Image icon = ResourceLoader.getImage("icon.png");
+	public static List<Image> icons = new ArrayList<Image>();
 	public static final Gson gson = new Gson();
+	
+	static {
+		icons.add(ResourceLoader.getImage("icon16.png"));
+		icons.add(ResourceLoader.getImage("icon32.png"));
+		icons.add(ResourceLoader.getImage("icon64.png"));
+	}
 	
 	
 	public static void main(String args[]) {

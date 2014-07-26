@@ -27,7 +27,7 @@ public class VersionSelectWindow extends JFrame {
 	public VersionSelectWindow() {
 		super("Profile Selector");
 		instance = this;
-		setIconImage(Amidst.icon);
+		setIconImages(Amidst.icons);
 		Container contentPane = getContentPane();
 		contentPane.setLayout(new MigLayout());
 		

@@ -24,7 +24,7 @@ public class LicenseWindow extends JFrame {
 	private JTextArea licenseText = new JTextArea();
 	public LicenseWindow() {
 		super("Licenses");
-		setIconImage(Amidst.icon);
+		setIconImages(Amidst.icons);
 		licenseText.setEditable(false);
 		licenseText.setLineWrap(true);
 		licenseText.setWrapStyleWord(true);
