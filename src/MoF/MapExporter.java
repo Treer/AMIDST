@@ -29,6 +29,7 @@ import amidst.map.LiveLayer;
 import amidst.map.Map;
 import amidst.map.MapMarkers;
 import amidst.map.MapObject;
+import amidst.map.layers.BiomeIconLayer;
 import amidst.map.layers.NetherFortressLayer;
 import amidst.map.layers.OceanMaskLayer;
 import amidst.map.layers.SpawnLayer;
@@ -54,6 +55,7 @@ public class MapExporter implements FragmentManagerListener {
 	private Map exportMap;
 	private OceanMaskLayer oceanLayer = new OceanMaskLayer();
 	private String seed;
+	private IconLayer[] iconLayers;
 	
 	
 	enum RequestType {
@@ -211,13 +213,28 @@ public class MapExporter implements FragmentManagerListener {
 			locationTable.put(MapMarkers.STRONGHOLD, new LocationTypeInfo("Dragon",       true));
 			locationTable.get(MapMarkers.STRONGHOLD).caption = "\"~Stronghold~\"";
 			locationTable.get(MapMarkers.STRONGHOLD).url = "http://minecraft.gamepedia.com/Stronghold";
+
+			locationTable.put(MapMarkers.ICE_PLAINS_SPIKES, new LocationTypeInfo("IceSpikes", true));				
+			locationTable.put(MapMarkers.MUSHROOM_ISLAND,   new LocationTypeInfo("MushroomIsland", true));				
 			
 			locationTable.put(MapMarkers.JUNGLE,     new LocationTypeInfo("JungleTemple", false));	
 			locationTable.put(MapMarkers.DESERT,     new LocationTypeInfo("DesertTemple", false));	
 			locationTable.put(MapMarkers.VILLAGE,    new LocationTypeInfo("Village",      false));	
-			locationTable.put(MapMarkers.WITCH,      new LocationTypeInfo("WitchHut",     false));				
+			locationTable.put(MapMarkers.WITCH,      new LocationTypeInfo("WitchHut",     false));
 		}
 				
+		
+		// Now that we have complete biome information we can remove the excess 
+		// biome icons from all the fragments.
+		for(IconLayer layer : iconLayers) {
+			if (layer instanceof BiomeIconLayer) {
+				BiomeIconLayer biomeIconLayer = (BiomeIconLayer)layer;				
+				biomeIconLayer.combineNearbyCandidates();
+			}			
+		}
+		exportMap.repaintFragments();
+		
+		
 		// Sort all the map objects so they will be listed in clumps of the same type. 
 		List<MapObject> mapObjectsUnsorted = exportMap.getMapObjects();
 		List<MapObject> mapObjects = new ArrayList<MapObject>();		
@@ -257,12 +274,18 @@ public class MapExporter implements FragmentManagerListener {
 				writer.println("// The following locations are spoilers, which you may wish to remove!");
 				
 				// Todo: add mushroom islands and ice spikes etc to the spoilers locations
-				writer.println("// (Hopefully Ocean Monuments, Mushroom Islands, and Ice Spikes coming here soon...)");				
+				writer.println("// (Hopefully Ocean Monuments coming here soon...)");				
 
 				for(MapObject location : mapObjects) {				
 					LocationTypeInfo info = locationTable.get(location.type);
 					if (info != null && info.isSpoilerLocation) {
 						writer.println(info.LocationFileEntry(location, exportMap));
+						
+						if (location.type == MapMarkers.MUSHROOM_ISLAND) {
+							// Include an island overlay on top of the mushroom location
+							LocationTypeInfo overlay = new LocationTypeInfo("IslandOverlay", true);
+							writer.println(overlay.LocationFileEntry(location, exportMap));							
+						}
 					}
 				}
 			}
@@ -393,19 +416,24 @@ public class MapExporter implements FragmentManagerListener {
 	
 	public MapExporter(long seed) {
 		
-		oceanLayer.visible = true;
 		this.seed = String.format("%d", seed);
+
+		oceanLayer.visible = true;
+		
+		iconLayers = new IconLayer[] {
+			new VillageLayer(),
+			new StrongholdLayer(),
+			new TempleLayer(),
+			new SpawnLayer(),
+			new NetherFortressLayer(),
+			new BiomeIconLayer(MapMarkers.MUSHROOM_ISLAND),
+			new BiomeIconLayer(MapMarkers.ICE_PLAINS_SPIKES)
+		};		
 		
 		fragmentManager = new FragmentManager(
 			new ImageLayer[] { oceanLayer },
 			new LiveLayer[] { },
-			new IconLayer[] {
-				new VillageLayer(),
-				new StrongholdLayer(),
-				new TempleLayer(),
-				new SpawnLayer(),
-				new NetherFortressLayer()
-			}
+			iconLayers
 		);				
 		
 		exportMap = new Map(fragmentManager);

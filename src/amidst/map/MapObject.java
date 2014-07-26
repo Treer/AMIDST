@@ -19,7 +19,11 @@ public class MapObject extends Point {
 	}
 	
 	public String getName() {
-		return type.toString();
+		
+		char[] charArray = type.toString().replace('_', ' ').toLowerCase().toCharArray(); 
+        charArray[0] = Character.toUpperCase(charArray[0]); 		
+		
+		return new String(charArray);
 	}
 	
 	public int getWidth() {

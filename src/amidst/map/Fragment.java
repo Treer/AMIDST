@@ -226,9 +226,10 @@ public class Fragment {
 	}
 	public void repaint() {
 		synchronized (loadLock) {
-			if (isLoaded)
-				for (int i = 0; i < imageLayers.length; i++)
-					imageLayers[i].load(this);
+			if (isLoaded) {
+				for (int i = 0; i < imageLayers.length; i++) imageLayers[i].load(this);
+				for (int i = 0; i < iconLayers.length; i++)  iconLayers[i].refresh(this);
+			}
 		}
 	}
 	

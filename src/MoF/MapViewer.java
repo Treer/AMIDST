@@ -10,8 +10,10 @@ import amidst.map.IconLayer;
 import amidst.map.ImageLayer;
 import amidst.map.LiveLayer;
 import amidst.map.Map;
+import amidst.map.MapMarkers;
 import amidst.map.MapObject;
 import amidst.map.MapObjectPlayer;
+import amidst.map.layers.BiomeIconLayer;
 import amidst.map.layers.BiomeLayer;
 import amidst.map.layers.GridLayer;
 import amidst.map.layers.NetherFortressLayer;
@@ -96,6 +98,17 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 				new TempleLayer(),
 				new SpawnLayer(),
 				new NetherFortressLayer(),
+				
+				// Including BiomeIconLayers in the MapViewer is only useful for debug purposes,
+				// there's no need to display this data in the main window - the BiomeIconLayers 
+				// are for MapExporter.
+				// Plus you have to move the biome off screen then back onto the screen in order
+				// to remove the excess mapObjects created for each fragment before they were
+				// condensed into one.
+				//
+				// new BiomeIconLayer(MapMarkers.MUSHROOM_ISLAND),
+				// new BiomeIconLayer(MapMarkers.ICE_PLAINS_SPIKES),
+				
 				playerLayer = new PlayerLayer()
 			});
 	}
