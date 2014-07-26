@@ -42,14 +42,17 @@ public class Map {
 		//instance = this;
 	}
 	
-	public void resetImageLayer(int id) {
+	/** Invokes repaintImageLayer(id) on every fragment */
+	public void repaintImageLayer(int id) {
 		Fragment frag = startNode;
 		while (frag.hasNext) {
 			frag = frag.nextFragment;
 			fragmentManager.repaintFragmentLayer(frag, id);
 		}
 	}
-	public void resetFragments() {
+
+	/** Invokes repaint() on every fragment */
+	public void repaintFragments() {
 		Fragment frag = startNode;
 		while (frag.hasNext) {
 			frag = frag.nextFragment;

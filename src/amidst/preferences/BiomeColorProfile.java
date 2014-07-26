@@ -106,7 +106,7 @@ public class BiomeColorProfile {
 		if (amidst.map.Map.instance != null)
 			amidst.map.Map.instance.resetFragments();
 		*/
-		if (worldMap != null) worldMap.resetFragments();
+		if (worldMap != null) worldMap.repaintFragments();
 	}
 	
 	
