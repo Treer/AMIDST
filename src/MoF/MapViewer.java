@@ -70,7 +70,7 @@ import javax.swing.JPopupMenu;
 public class MapViewer extends JComponent implements MouseListener, MouseWheelListener, KeyListener {
 	private static final long serialVersionUID = -8309927053337294612L;
 	// TODO: This should likely be moved somewhere else.
-	private static FragmentManager fragmentManager;
+	private FragmentManager fragmentManager;
 	private static PlayerLayer    playerLayer;	
 	
 	private Widget mouseOwner;
@@ -83,35 +83,6 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 		dropShadowTop         = ResourceLoader.getImage("dropshadow/inner_top.png"),
 		dropShadowLeft        = ResourceLoader.getImage("dropshadow/inner_left.png"),
 		dropShadowRight       = ResourceLoader.getImage("dropshadow/inner_right.png");
-	static {
-		fragmentManager = new FragmentManager(
-			new ImageLayer[] {
-				new BiomeLayer(),
-				new SlimeLayer()
-			},
-			new LiveLayer[] {
-				new GridLayer()
-			},
-			new IconLayer[] {
-				new VillageLayer(),
-				new StrongholdLayer(),
-				new TempleLayer(),
-				new SpawnLayer(),
-				new NetherFortressLayer(),
-				
-				// Including BiomeIconLayers in the MapViewer is only useful for debug purposes,
-				// there's no need to display this data in the main window - the BiomeIconLayers 
-				// are for MapExporter.
-				// Plus you have to move the biome off screen then back onto the screen in order
-				// to remove the excess mapObjects created for each fragment before they were
-				// condensed into one.
-				//
-				// new BiomeIconLayer(MapMarkers.MUSHROOM_ISLAND),
-				// new BiomeIconLayer(MapMarkers.ICE_PLAINS_SPIKES),
-				
-				playerLayer = new PlayerLayer()
-			});
-	}
 	
 	private Project proj;
 	
@@ -144,6 +115,8 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 	}
 	
 	MapViewer(Project proj) {
+		fragmentManager = createFragmentManager(); // creating this on construction instead of leaving it to static construction ensure any stateful Layers get cleaned out, e.g. BiomeIconLayer (which should only ever be here for debug purposes anyway)
+
 		panSpeed = new Point2D.Double();
 		this.proj = proj;
 		if (playerLayer.isEnabled = proj.saveLoaded) {
@@ -175,6 +148,39 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 		textMetrics = getFontMetrics(textFont);
 	}
 
+	private FragmentManager createFragmentManager() {
+		
+		return new FragmentManager(
+			new ImageLayer[] {
+				new BiomeLayer(),
+				new SlimeLayer()
+			},
+			new LiveLayer[] {
+				new GridLayer()
+			},
+			new IconLayer[] {
+				new VillageLayer(),
+				new StrongholdLayer(),
+				new TempleLayer(),
+				new SpawnLayer(),
+				new NetherFortressLayer(),
+				
+				// Including BiomeIconLayers in the MapViewer is only useful for debug purposes,
+				// there's no need to display this data in the main window - the BiomeIconLayers 
+				// are for MapExporter.
+				// Plus you have to move the biome off screen then back onto the screen in order
+				// to remove the excess mapObjects created for each fragment before they were
+				// condensed into one.
+				//
+				// new BiomeIconLayer(MapMarkers.MUSHROOM_ISLAND),
+				// new BiomeIconLayer(MapMarkers.ICE_PLAINS_SPIKES),
+				// new BiomeIconLayer(MapMarkers.FLOWER_FOREST),
+				
+				playerLayer = new PlayerLayer()
+			}
+		);
+	}
+	
 	@Override
 	public void paint(Graphics g) {	 
 		Graphics2D g2d = (Graphics2D)g.create();

@@ -12,8 +12,10 @@ import amidst.map.IconLayer;
 import amidst.map.MapMarkers;
 import amidst.map.MapObject;
 import amidst.minecraft.Biome;
+import amidst.minecraft.MinecraftUtil;
 import amidst.version.VersionInfo;
 
+/** Allows rare biomes to be listed as location markers */
 public class BiomeIconLayer extends IconLayer {
 	
 	static final int cBiomeScale = Fragment.SIZE / Fragment.BIOME_SIZE;	
@@ -21,10 +23,11 @@ public class BiomeIconLayer extends IconLayer {
 	
 	protected static int size = Fragment.BIOME_SIZE;
 	
+	public boolean visible;
 	MapMarkers biomeType;
-	Biome[] desiredBiomes;
-	VersionInfo minimumVersion; 
+	Biome[] desiredBiomes;	
 	boolean[] isDesiredBiome = new boolean[Biome.biomes.length];
+	boolean versionRequirementsMet = false;
 	
 	/** Manages a bunch of points which we know belong to a desired biome type, so we can
 	 * group points together that belong to the same continuous biome, and determine a single
@@ -32,7 +35,10 @@ public class BiomeIconLayer extends IconLayer {
 	 */
 	class BiomePointCloud {
 		
-		static final int cJoinDistance = 20;
+		// 50 is a large enough join distance that the double-mushroom-island of 
+		// seed 476826859622501946 at -2300, -1500 will be treated as one location.
+		// (v1.7.10, another example: 1762298846795804260 at -5000, -300)
+		static final int cJoinDistance = 50; 
 		
 		private Set<Point> points = new HashSet<Point>();
 		private Point topLeft;
@@ -119,8 +125,17 @@ public class BiomeIconLayer extends IconLayer {
 	}
 	
 	List<BiomePointCloud> candidates = new ArrayList<BiomePointCloud>();
-	
+
 	public BiomeIconLayer(MapMarkers biomeType) {
+		this(biomeType, true);		
+	}	
+	
+	public BiomeIconLayer(MapMarkers biomeType, boolean visible) {
+		
+		this.biomeType = biomeType;
+		this.visible   = visible;
+				
+		VersionInfo minimumVersion;
 		
 		switch(biomeType) {		
 			case MUSHROOM_ISLAND:
@@ -133,24 +148,27 @@ public class BiomeIconLayer extends IconLayer {
 				desiredBiomes = new Biome[] { Biome.icePlainsSpikes } ;
 				break;
 				
+			case FLOWER_FOREST:
+				minimumVersion = VersionInfo.V1_7_2;
+				desiredBiomes = new Biome[] { Biome.flowerForest } ;
+				break;
+				
 			default:
 				Log.crash("BiomeIconLayer created with unsupported biome");
+				minimumVersion = VersionInfo.unknown;
 				break;
-		}		
-		
-		this.biomeType = biomeType;
+		}				
 		
 		for (int i = 0; i < isDesiredBiome.length; i++) isDesiredBiome[i] = false;
-		for(Biome biome : desiredBiomes) { isDesiredBiome[biome.index] = true; }		
+		for(Biome biome : desiredBiomes) { isDesiredBiome[biome.index] = true; }
+		
+		versionRequirementsMet = MinecraftUtil.getVersion().isAtLeast(minimumVersion);		
 	}
 	
 	
 	@Override
 	public boolean isVisible() {
-		// Set to true because the only times this layer should be included in the
-		// the main window is when debugging, in which case you probably want to see
-		// were the MapObjects are being placed.
-		return true;		
+		return visible;
 	}
 	
 	/** As more fragments are loaded, the number and position of the MapObjects changes
@@ -183,38 +201,41 @@ public class BiomeIconLayer extends IconLayer {
 	
 	@Override
 	public void generateMapObjects(Fragment frag) {
-				
-		int searchResolution = cSearchResolution / cBiomeScale;
 		
-		boolean candidatesChanged = false;
-		
-		for (int biome_y = 0; biome_y < size; biome_y += searchResolution) {
-			for (int biome_x = 0; biome_x < size; biome_x += searchResolution) {
-
-				int index = biome_y * size + biome_x;
+		if (versionRequirementsMet) {
+						
+			int searchResolution = cSearchResolution / cBiomeScale;
 			
-				if (isDesiredBiome[frag.biomeData[index]]) {
-					
-					Point foundPoint = new Point(frag.blockX + (biome_x * cBiomeScale), frag.blockY + (biome_y * cBiomeScale));
+			boolean candidatesChanged = false;
+			
+			for (int biome_y = 0; biome_y < size; biome_y += searchResolution) {
+				for (int biome_x = 0; biome_x < size; biome_x += searchResolution) {
 	
-					boolean foundExistingBiome = false;
-					for(BiomePointCloud candidate: candidates) {
-					
-						if (candidate.belongs(foundPoint)) {						
-							candidatesChanged = candidate.add(foundPoint);
-							foundExistingBiome = true;
+					int index = biome_y * size + biome_x;
+				
+					if (isDesiredBiome[frag.biomeData[index]]) {
+						
+						Point foundPoint = new Point(frag.blockX + (biome_x * cBiomeScale), frag.blockY + (biome_y * cBiomeScale));
+		
+						boolean foundExistingBiome = false;
+						for(BiomePointCloud candidate: candidates) {
+						
+							if (candidate.belongs(foundPoint)) {						
+								candidatesChanged = candidate.add(foundPoint);
+								foundExistingBiome = true;
+							}
 						}
+						if (!foundExistingBiome) {
+							candidates.add(new BiomePointCloud(foundPoint));
+							candidatesChanged = true;
+						}				
 					}
-					if (!foundExistingBiome) {
-						candidates.add(new BiomePointCloud(foundPoint));
-						candidatesChanged = true;
-					}				
 				}
 			}
+			if (candidatesChanged) combineNearbyCandidates();
+			
+			addCandidatesToFragment(frag);
 		}
-		if (candidatesChanged) combineNearbyCandidates();
-		
-		addCandidatesToFragment(frag);
 	}
 	
 	private void addCandidatesToFragment(Fragment frag) {

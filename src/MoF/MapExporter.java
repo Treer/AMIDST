@@ -209,20 +209,21 @@ public class MapExporter implements FragmentManagerListener {
 		java.util.Map<MapMarkers, LocationTypeInfo> locationTable = new EnumMap<MapMarkers, LocationTypeInfo>(MapMarkers.class);
 
 		if (netherLocations) {
-			locationTable.put(MapMarkers.NETHER_FORTRESS, new LocationTypeInfo("NetherFortress", false));	
+			locationTable.put(MapMarkers.NETHER_FORTRESS,   new LocationTypeInfo("NetherFortress", false));	
 		} else {
-			locationTable.put(MapMarkers.STRONGHOLD, new LocationTypeInfo("Dragon",       true));
+			locationTable.put(MapMarkers.STRONGHOLD,        new LocationTypeInfo("Dragon",         true));
 			locationTable.get(MapMarkers.STRONGHOLD).caption = "\"~Stronghold~\"";
 			locationTable.get(MapMarkers.STRONGHOLD).url = "http://minecraft.gamepedia.com/Stronghold";
 
-			locationTable.put(MapMarkers.ICE_PLAINS_SPIKES, new LocationTypeInfo("IceSpikes", true));				
+			locationTable.put(MapMarkers.ICE_PLAINS_SPIKES, new LocationTypeInfo("IceSpikes",      true));				
 			locationTable.put(MapMarkers.MUSHROOM_ISLAND,   new LocationTypeInfo("MushroomIsland", true));				
+			locationTable.put(MapMarkers.FLOWER_FOREST,     new LocationTypeInfo("FlowerForest",   false));				
 			
-			locationTable.put(MapMarkers.SPAWN,      new LocationTypeInfo("Spawn",        false));
-			locationTable.put(MapMarkers.JUNGLE,     new LocationTypeInfo("JungleTemple", false));	
-			locationTable.put(MapMarkers.DESERT,     new LocationTypeInfo("DesertTemple", false));	
-			locationTable.put(MapMarkers.VILLAGE,    new LocationTypeInfo("Village",      false));	
-			locationTable.put(MapMarkers.WITCH,      new LocationTypeInfo("WitchHut",     false));
+			locationTable.put(MapMarkers.SPAWN,             new LocationTypeInfo("Spawn",          false));
+			locationTable.put(MapMarkers.JUNGLE,            new LocationTypeInfo("JungleTemple",   false));	
+			locationTable.put(MapMarkers.DESERT,            new LocationTypeInfo("DesertTemple",   false));	
+			locationTable.put(MapMarkers.VILLAGE,           new LocationTypeInfo("Village",        false));	
+			locationTable.put(MapMarkers.WITCH,             new LocationTypeInfo("WitchHut",       false));
 		}
 				
 		
@@ -308,7 +309,7 @@ public class MapExporter implements FragmentManagerListener {
 				writer.println("// The following locations fall within a map of range " + rangeLimit);
 
 				if (lastRange <= 0) {
-					writer.println("label, 0, 0, \"\\nOrigin\"");
+					writer.println("Label, 0, 0, \"\\nOrigin\"");
 				}
 				
 				for(MapObject location : mapObjects) {				
@@ -426,8 +427,9 @@ public class MapExporter implements FragmentManagerListener {
 			new TempleLayer(),
 			new SpawnLayer(),
 			new NetherFortressLayer(),
-			new BiomeIconLayer(MapMarkers.MUSHROOM_ISLAND),
-			new BiomeIconLayer(MapMarkers.ICE_PLAINS_SPIKES)
+			new BiomeIconLayer(MapMarkers.MUSHROOM_ISLAND, false),
+			new BiomeIconLayer(MapMarkers.ICE_PLAINS_SPIKES, false),
+			new BiomeIconLayer(MapMarkers.FLOWER_FOREST, false)
 		};		
 		
 		fragmentManager = new FragmentManager(

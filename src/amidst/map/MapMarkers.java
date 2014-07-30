@@ -19,7 +19,8 @@ public enum MapMarkers {
 	SPAWN,
 	WITCH,
 	MUSHROOM_ISLAND,
-	ICE_PLAINS_SPIKES;
+	ICE_PLAINS_SPIKES,
+	FLOWER_FOREST;
 	
 	public final BufferedImage image;
 	

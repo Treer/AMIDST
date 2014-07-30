@@ -20,5 +20,6 @@
     <maxVersion></maxVersion>
     <jdkPreference>preferJre</jdkPreference>
     <runtimeBits>64/32</runtimeBits>
+    <opt>-Xmx1024M</opt>
   </jre>
 </launch4jConfig>
