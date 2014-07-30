@@ -1,11 +1,18 @@
-AMIDST for Overworld Map
-========================
+AMIDST Exporter
+===============
 
-I'm seeing if I can modify AMIDST to generate backgrounds for 
-the map system at http://buildwithblocks.info.
+This is a modified version of Amidst, intended for use with the Ink & Parchment map system maintained 
+at [buildwithblocks.info](http://buildwithblocks.info).
 
-Hopefully users will be able to generate a background (such as https://i.imgur.com/7Kez7Kg.png)
-with nothing more than the seed.
+With it, players can automatically generate location list files and ocean-maps (allowing [ocean backgrounds such as this](http://www.buildingwithblocks.info/images/ocean_preview_small.png)) with nothing more than the seed.
+
+The original AMIDST can be found [here](http://www.minecraftforum.net/forums/mapping-and-modding/minecraft-tools/1262200-v3-6-amidst-strongholds-village-biome-etc-finder).
+
+Requirements
+------------
+800 MB of RAM - This is because a large area of the Minecraft map is generated before exporting the locations and oceans. So, if running from the command line, try:
+
+    java -Xmx1024M -jar AmidstExporter.jar
 
 
 License and warranty
