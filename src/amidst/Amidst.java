@@ -21,10 +21,12 @@ import amidst.minecraft.MinecraftUtil;
 import amidst.preferences.BiomeColorProfile;
 import amidst.resources.ResourceLoader;
 
-public class Amidst {
+public class Amidst {	
 	public final static int version_major = 3;
 	public final static int version_minor = 7;
 	public final static String versionOffset = " beta 1";
+	public final static int exporter_version_major = 1;
+	public final static int exporter_version_minor = 1;
 	public static List<Image> icons = new ArrayList<Image>();
 	public static final Gson gson = new Gson();
 	
@@ -81,6 +83,14 @@ public class Amidst {
 	public static boolean isOSX() {
 		String osName = System.getProperty("os.name");
 		return osName.contains("OS X");
+	}
+
+	/**
+	 * Gets the version of AMIDST Exporter, which can increment independently of the 
+	 * version of AMIDST it is build on. 
+	 */
+	public static String exporterVersion() {
+		return exporter_version_major + "." + exporter_version_minor;
 	}
 	
 	public static String version() {

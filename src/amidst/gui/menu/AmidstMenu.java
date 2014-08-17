@@ -1,6 +1,7 @@
 package amidst.gui.menu;
 
 import MoF.*;
+import amidst.Amidst;
 import amidst.Options;
 import amidst.Util;
 import amidst.gui.LicenseWindow;
@@ -698,7 +699,10 @@ public class AmidstMenu extends JMenuBar {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						JOptionPane.showMessageDialog(window,
-							"Advanced Minecraft Interfacing and Data/Structure Tracking (AMIDST)\n" +
+							"AMIDST Exporter v" + Amidst.exporterVersion() + "\n" + 
+							"This is a version of AMIDST modified to export to The Ink & Parchment Map,\n"+
+							"maintained at www.buildingwithblocks.info\n\n" + 
+							"AMIDST is Advanced Minecraft Interfacing and Data/Structure Tracking\n" +
 							"By Skidoodle (amidst.project@gmail.com)");
 					}
 				});

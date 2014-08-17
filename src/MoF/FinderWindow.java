@@ -20,7 +20,7 @@ public class FinderWindow extends JFrame {
 	private final AmidstMenu menuBar;
 	public FinderWindow() {
 		//Initialize window
-		super("Amidst Exporter v" + Amidst.version());
+		super("Map Exporter v" + Amidst.exporterVersion() + ", a mod of AMIDST v" + Amidst.version());
 		
 		setSize(1000,800);
 		//setLookAndFeel();
