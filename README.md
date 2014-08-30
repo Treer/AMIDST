@@ -2,7 +2,7 @@ AMIDST Exporter
 ===============
 
 This is a version of Amidst with an Export menu added to it, intended for use with the Ink & Parchment map system maintained 
-at [buildwithblocks.info](http://buildwithblocks.info).
+at [buildwithblocks.info](http://buildwithblocks.info). The compiled/executable version can be [downloaded from here](http://www.buildingwithblocks.info/exportfromseed.html).
 
 With it, players can automatically generate location list files and ocean-maps (allowing [ocean backgrounds such as this](http://www.buildingwithblocks.info/images/ocean_preview_small.png)) with nothing more than the world's seed.
 
