@@ -33,6 +33,7 @@ import amidst.map.MapObject;
 import amidst.map.layers.BiomeIconLayer;
 import amidst.map.layers.NetherFortressLayer;
 import amidst.map.layers.OceanMaskLayer;
+import amidst.map.layers.OceanMonumentLayer;
 import amidst.map.layers.SpawnLayer;
 import amidst.map.layers.StrongholdLayer;
 import amidst.map.layers.TempleLayer;
@@ -223,6 +224,7 @@ public class MapExporter implements FragmentManagerListener {
 			locationTable.put(MapMarkers.JUNGLE,            new LocationTypeInfo("JungleTemple",    false));	
 			locationTable.put(MapMarkers.DESERT,            new LocationTypeInfo("DesertTemple",    false));	
 			locationTable.put(MapMarkers.VILLAGE,           new LocationTypeInfo("Village",         false));	
+			locationTable.put(MapMarkers.OCEAN_MONUMENT,    new LocationTypeInfo("SeaMonster",      true));	
 			locationTable.put(MapMarkers.WITCH,             new LocationTypeInfo("WitchHut",        false));
 		}
 				
@@ -275,7 +277,6 @@ public class MapExporter implements FragmentManagerListener {
 				// Insert the spoiler locations 
 				writer.println("");
 				writer.println("// The following locations are spoilers, which you may wish to remove!");
-				writer.println("// (Hopefully Ocean Monuments coming here soon...)");				
 
 				for(MapObject location : mapObjects) {				
 					LocationTypeInfo info = locationTable.get(location.type);
@@ -423,6 +424,7 @@ public class MapExporter implements FragmentManagerListener {
 		
 		iconLayers = new IconLayer[] {
 			new VillageLayer(),
+			new OceanMonumentLayer(),
 			new StrongholdLayer(),
 			new TempleLayer(),
 			new SpawnLayer(),

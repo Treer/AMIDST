@@ -39,6 +39,7 @@ public class LayerVisibilityController {
 		layerList.add(Options.instance.showGrid);
 		layerList.add(Options.instance.showSlimeChunks);
 		layerList.add(Options.instance.showVillages);
+		layerList.add(Options.instance.showOceanMonuments);
 		layerList.add(Options.instance.showTemples);
 		layerList.add(Options.instance.showStrongholds);
 		layerList.add(Options.instance.showPlayers);

@@ -18,6 +18,7 @@ import amidst.map.layers.BiomeLayer;
 import amidst.map.layers.GridLayer;
 import amidst.map.layers.NetherFortressLayer;
 import amidst.map.layers.OceanMaskLayer;
+import amidst.map.layers.OceanMonumentLayer;
 import amidst.map.layers.PlayerLayer;
 import amidst.map.layers.SlimeLayer;
 import amidst.map.layers.SpawnLayer;
@@ -160,6 +161,7 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 			},
 			new IconLayer[] {
 				new VillageLayer(),
+				new OceanMonumentLayer(),
 				new StrongholdLayer(),
 				new TempleLayer(),
 				new SpawnLayer(),
