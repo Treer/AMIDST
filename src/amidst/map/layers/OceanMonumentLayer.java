@@ -8,11 +8,28 @@ import amidst.Options;
 import amidst.map.Fragment;
 import amidst.map.IconLayer;
 import amidst.map.MapObjectOceanMonument;
-import amidst.map.MapObjectVillage;
 import amidst.minecraft.Biome;
 import amidst.minecraft.MinecraftUtil;
+import amidst.preferences.BooleanPrefModel;
+import amidst.version.VersionInfo;
 
 public class OceanMonumentLayer extends IconLayer {
+	
+	/**
+	 * Set this to true if you want to show OceanMonument locations in 
+	 * maps running on older versions of MineCraft (pre 1.8)
+	 * (Ocean Monument icons will be disabled in the Layers menu if this is false)
+	 * 
+	 * I have this set to true because I instruct people to export their 
+	 * map information using the MineCraft version that first created the map,
+	 * even though it might now be running in MineCraft 1.8+ which will have 
+	 * retroactively added Ocean Monuments.
+	 * 
+	 * Note: Ocean Monuments are not retroactively added anywhere "that 
+	 * has been seen by a player by more than a couple of minutes" 
+	 * https://www.reddit.com/r/Minecraft/comments/28sbtm/a_minecraft_experiment_just_how_does_the_new_18/cidzxpi?context=1
+	 */
+	public static final boolean cAllVersionsCanShowOceanMonuments = true;
 	
 	public static List<Biome> validBiomes = Arrays.asList(
 		new Biome[] { 
@@ -41,6 +58,36 @@ public class OceanMonumentLayer extends IconLayer {
 	public OceanMonumentLayer() {
 	}
 	
+	/**
+	 * Invoke this once, after the Minecraft profile or version has been selected.
+	 * 
+	 * Selects and enables/disables the option based on whether Ocean Monuments
+	 * are supported.
+	 * @param oceanMonumentPreference
+	 */
+	public static void InitializeUIOptions(BooleanPrefModel oceanMonumentPrefModel) {
+
+		if (!MinecraftVersionSupportsOceanMoments()) {
+			// Current Minecraft doesn't support Ocean Monuments
+
+			// Deselect the Ocean Monuments Layers option for this session.
+			oceanMonumentPrefModel.setSelected(false);
+			
+			if (!cAllVersionsCanShowOceanMonuments) {
+				// Disable the option, to indicate to the user that 
+				// there are no Ocean Monuments to show.
+				oceanMonumentPrefModel.setEnabled(false);
+			}
+		}
+	}
+	
+	/**
+	 * @return true if Minecraft is v1.8 or greater
+	 */
+	public static boolean MinecraftVersionSupportsOceanMoments() {
+		return MinecraftUtil.getVersion().isAtLeast(VersionInfo.V1_8);
+	}
+	
 	@Override
 	public boolean isVisible() {
 		return Options.instance.showOceanMonuments.get();		
@@ -48,20 +95,24 @@ public class OceanMonumentLayer extends IconLayer {
 	
 	@Override
 	public void generateMapObjects(Fragment frag) {
-		int size = Fragment.SIZE >> 4;
-		for (int x = 0; x < size; x++) {
-			for (int y = 0; y < size; y++) {
-				int chunkX = x + frag.getChunkX();
-				int chunkY = y + frag.getChunkY();
-				if (checkChunk(chunkX, chunkY)) {
-					frag.addObject(new MapObjectOceanMonument(x << 4, y << 4).setParent(this));
+		
+		if (cAllVersionsCanShowOceanMonuments || MinecraftVersionSupportsOceanMoments()) {
+		
+			int size = Fragment.SIZE >> 4;
+			for (int x = 0; x < size; x++) {
+				for (int y = 0; y < size; y++) {
+					int chunkX = x + frag.getChunkX();
+					int chunkY = y + frag.getChunkY();
+					if (checkChunk(chunkX, chunkY)) {
+						frag.addObject(new MapObjectOceanMonument(x << 4, y << 4).setParent(this));
+					}
 				}
 			}
 		}
 	}
 	 
     /**
-     * puts the World Random seed to a specific state dependant on the inputs
+     * puts the World Random seed to a specific state dependent on the inputs
      */
     public void setRandomSeed(int a, int b, int structure_magic_number)
     {

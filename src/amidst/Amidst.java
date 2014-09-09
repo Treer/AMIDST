@@ -26,7 +26,7 @@ public class Amidst {
 	public final static int version_minor = 7;
 	public final static String versionOffset = "";
 	public final static int exporter_version_major = 1;
-	public final static int exporter_version_minor = 2;
+	public final static int exporter_version_minor = 3;
 	public static List<Image> icons = new ArrayList<Image>();
 	public static final Gson gson = new Gson();
 	
