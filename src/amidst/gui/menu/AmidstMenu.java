@@ -194,7 +194,7 @@ public class AmidstMenu extends JMenuBar {
 							String worldTypePreference = Options.instance.worldType.get();
 							SaveLoader.Type worldType = null;
 							if (worldTypePreference.equals("Prompt each time")) {
-								worldType = choose("New Project", "Enter world type\n", SaveLoader.Type.values());
+								worldType = choose("New Project", "Enter world type\n", SaveLoader.selectableTypes);
 							} else {
 								worldType = SaveLoader.Type.fromMixedCase(worldTypePreference);
 							}
@@ -224,7 +224,7 @@ public class AmidstMenu extends JMenuBar {
 							String worldTypePreference = Options.instance.worldType.get();
 							SaveLoader.Type worldType = null;
 							if (worldTypePreference.equals("Prompt each time")) {
-								worldType = choose("New Project", "Enter world type\n", SaveLoader.Type.values());
+								worldType = choose("New Project", "Enter world type\n", SaveLoader.selectableTypes);
 							} else {
 								worldType = SaveLoader.Type.fromMixedCase(worldTypePreference);
 							}
