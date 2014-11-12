@@ -74,24 +74,23 @@ public class TempleLayer extends IconLayer {
 		
 		return Arrays.asList(validBiomes);
 	}
-
 	public boolean checkChunk(int chunkX, int chunkY) {
-		int i = 32;
-		int j = 8;
+		int maxDistanceBetweenScatteredFeatures = 32;
+		int minDistanceBetweenScatteredFeatures = 8;
 		
 		int k = chunkX;
 		int m = chunkY;
-		if (chunkX < 0) chunkX -= i - 1;
-		if (chunkY < 0) chunkY -= i - 1;
+		if (chunkX < 0) chunkX -= maxDistanceBetweenScatteredFeatures - 1;
+		if (chunkY < 0) chunkY -= maxDistanceBetweenScatteredFeatures - 1;
 		
-		int n = chunkX / i;
-		int i1 = chunkY / i;
+		int n = chunkX / maxDistanceBetweenScatteredFeatures;
+		int i1 = chunkY / maxDistanceBetweenScatteredFeatures;
 		long l1 = n * 341873128712L + i1 * 132897987541L + Options.instance.seed + 14357617;
 		random.setSeed(l1);
-		n *= i;
-		i1 *= i;
-		n += random.nextInt(i - j);
-		i1 += random.nextInt(i - j);
+		n *= maxDistanceBetweenScatteredFeatures;
+		i1 *= maxDistanceBetweenScatteredFeatures;
+		n += random.nextInt(maxDistanceBetweenScatteredFeatures - minDistanceBetweenScatteredFeatures);
+		i1 += random.nextInt(maxDistanceBetweenScatteredFeatures - minDistanceBetweenScatteredFeatures);
 		
 		return (k == n) && (m == i1) && MinecraftUtil.isValidBiome(k * 16 + 8, m * 16 + 8, 0, validBiomes);
 	}

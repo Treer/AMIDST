@@ -9,7 +9,6 @@ import amidst.map.ImageLayer;
 import amidst.minecraft.Biome;
 
 public class BiomeLayer extends ImageLayer {
-	public static BiomeLayer instance;
 	protected static int size = Fragment.SIZE >> 2;
 
 	protected boolean[] selectedBiomes = new boolean[Biome.biomes.length];
@@ -17,7 +16,6 @@ public class BiomeLayer extends ImageLayer {
 	
 	public BiomeLayer() {
 		super(size);
-		instance = this;
 		deselectAllBiomes();
 	}
 	

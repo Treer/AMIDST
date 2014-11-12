@@ -8,6 +8,8 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 
 import amidst.logging.Log;
+import amidst.map.FragmentManager;
+import amidst.map.ImageLayer;
 import amidst.map.layers.BiomeLayer;
 import amidst.minecraft.Biome;
 import MoF.MapViewer;
@@ -50,6 +52,12 @@ public class BiomeWidget extends PanelWidget {
 		forceVisibility(false);
 	}
 
+	private BiomeLayer getBiomeLayer() {
+		BiomeLayer result = (BiomeLayer) mapViewer.getFragmentManager().getLayer(BiomeLayer.class);
+		if (result == null) Log.e("BiomeWidget: BiomeLayer is missing!");
+		return result;
+	}	
+	
 	@Override
 	public void draw(Graphics2D g2d, float time) {
 		x = mapViewer.getWidth() - width;
@@ -78,9 +86,11 @@ public class BiomeWidget extends PanelWidget {
 		g2d.drawRect(innerBox.x - 1, innerBox.y - 1, innerBox.width + 1 + (scrollbarVisible?scrollbarWidth:0), innerBox.height + 1);
 		g2d.setClip(innerBox);
 		
+		BiomeLayer biomeLayer = getBiomeLayer();		
+		
 		for (int i = 0; i < biomes.size(); i++) {
 			Biome biome = biomes.get(i);
-			if (BiomeLayer.instance.isBiomeSelected(biome.index))
+			if (biomeLayer.isBiomeSelected(biome.index))
 				g2d.setColor(((i % 2) == 1)?biomeLitBgColor1:biomeLitBgColor2);
 			else
 				g2d.setColor(((i % 2) == 1)?biomeBgColor1:biomeBgColor2);
@@ -155,6 +165,8 @@ public class BiomeWidget extends PanelWidget {
 			}
 		}
 		
+		BiomeLayer biomeLayer = getBiomeLayer();	
+		
 		boolean needsRedraw = false;
 		if ((mouseX > innerBox.x - x) &&
 			(mouseX < innerBox.x - x + innerBox.width) &&
@@ -162,7 +174,7 @@ public class BiomeWidget extends PanelWidget {
 			(mouseY < innerBox.y - y + innerBox.height)) {
 			int id = (mouseY - (innerBox.y - y) - biomeListYOffset) / 16;
 			if (id < biomes.size()) {
-				BiomeLayer.instance.toggleBiomeSelect(biomes.get(id).index);
+				biomeLayer.toggleBiomeSelect(biomes.get(id).index);
 				needsRedraw = true;
 			}
 		}
@@ -170,15 +182,15 @@ public class BiomeWidget extends PanelWidget {
 		// TODO: These values are temporarly hard coded for the sake of a fast release
 		if ((mouseY > height - 25) && (mouseY < height - 9)) {
 			if ((mouseX > 117) && (mouseX < 139)) {
-				BiomeLayer.instance.selectAllBiomes();
+				biomeLayer.selectAllBiomes();
 				needsRedraw = true;
 			} else if ((mouseX > 143) && (mouseX < 197)) {
 				for (int i = 128; i < Biome.biomes.length; i++)
 					if (Biome.biomes[i] != null)
-						BiomeLayer.instance.selectBiome(i);
+						biomeLayer.selectBiome(i);
 				needsRedraw = true;
 			} else if ((mouseX > 203) && (mouseX < 242)) {
-				BiomeLayer.instance.deselectAllBiomes();
+				biomeLayer.deselectAllBiomes();
 				needsRedraw = true;
 			}
 		}
@@ -186,7 +198,7 @@ public class BiomeWidget extends PanelWidget {
 			(new Thread(new Runnable() {
 				@Override
 				public void run() {
-					map.repaintImageLayer(BiomeLayer.instance.getLayerId());
+					map.repaintImageLayer(getBiomeLayer().getLayerId());
 				}
 			})).start();
 		}

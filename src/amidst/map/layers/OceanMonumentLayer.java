@@ -59,9 +59,10 @@ public class OceanMonumentLayer extends IconLayer {
 	}
 	
 	/**
+	 * Adds optional polish to user interface.
 	 * Invoke this once, after the Minecraft profile or version has been selected.
 	 * 
-	 * Selects and enables/disables the option based on whether Ocean Monuments
+	 * Selects and enables/disables the layer option based on whether Ocean Monuments
 	 * are supported.
 	 * @param oceanMonumentPreference
 	 */
