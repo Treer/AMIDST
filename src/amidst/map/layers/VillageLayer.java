@@ -37,32 +37,41 @@ public class VillageLayer extends IconLayer {
 		}
 	}
 	 
+    /**
+     * puts the World Random seed to a specific state dependant on the inputs
+     */
+    public void setRandomSeed(int a, int b, int salt)
+    {
+        long positionSeed = (long)a * 341873128712L + (long)b * 132897987541L + Options.instance.seed + (long)salt;
+        random.setSeed(positionSeed);
+    }
+	
 
 	public boolean checkChunk(int chunkX, int chunkY) {
-		byte villageParam1 = 32;
-		byte villageParam2 = 8;
+		byte maxDistanceBetweenScatteredFeatures = 32;
+		byte minDistanceBetweenScatteredFeatures = 8;
+		int structureSize = 0;
+		int structureMagicNumber = 10387312; // 10387312 is the magic number for villages	
+		
 		
 		int k = chunkX;
 		int m = chunkY;
-		if (chunkX < 0) chunkX -= villageParam1 - 1;
-		if (chunkY < 0) chunkY -= villageParam1 - 1;
+		if (chunkX < 0) chunkX -= maxDistanceBetweenScatteredFeatures - 1;
+		if (chunkY < 0) chunkY -= maxDistanceBetweenScatteredFeatures - 1;
 		
-		int n = chunkX / villageParam1;
-		int i1 = chunkY / villageParam1;
+		int n = chunkX / maxDistanceBetweenScatteredFeatures;
+		int i1 = chunkY / maxDistanceBetweenScatteredFeatures;
 		
-		long positionSeed = n * 341873128712L + i1 * 132897987541L + Options.instance.seed + 10387312L;
-		random.setSeed(positionSeed);
+		setRandomSeed(n, i1, structureMagicNumber); 	
 		
-		
-		
-		n *= villageParam1;
-		i1 *= villageParam1;
-		n += random.nextInt(villageParam1 - villageParam2);
-		i1 += random.nextInt(villageParam1 - villageParam2);
+		n *= maxDistanceBetweenScatteredFeatures;
+		i1 *= maxDistanceBetweenScatteredFeatures;
+		n += random.nextInt(maxDistanceBetweenScatteredFeatures - minDistanceBetweenScatteredFeatures);
+		i1 += random.nextInt(maxDistanceBetweenScatteredFeatures - minDistanceBetweenScatteredFeatures);
 		chunkX = k;
 		chunkY = m;
 		if ((chunkX == n) && (chunkY == i1))
-			return MinecraftUtil.isValidBiome(chunkX * 16 + 8, chunkY * 16 + 8, 0, validBiomes);
+			return MinecraftUtil.isValidBiome(chunkX * 16 + 8, chunkY * 16 + 8, structureSize, validBiomes);
 		
 		return false;
 	}

@@ -55,6 +55,40 @@ public class FragmentManager implements Runnable {
 		for (IconLayer layer : iconLayers)
 			layer.update(time);
 	}
+
+	/**
+	 * Gets the first layer found of a type that matches layerClass, or null if
+	 * no such layer was found. layerClass can be an ImageLayer, IconLayer, LiveLayer,
+	 * or any of their subclasses.
+	 */
+	public Layer getLayer(Class layerClass){
+	
+		Layer result = null;
+		
+		for (ImageLayer layer : imageLayers) {
+			if (layerClass.isInstance(layer)) {
+				result = layer;
+				break;
+			}			
+		}		
+		if (result == null) {
+			for (LiveLayer layer : liveLayers) {
+				if (layerClass.isInstance(layer)) {
+					result = layer;
+					break;
+				}			
+			}
+		}
+		if (result == null) {
+			for (IconLayer layer : iconLayers) {
+				if (layerClass.isInstance(layer)) {
+					result = layer;
+					break;
+				}			
+			}
+		}
+		return result;
+	}
 	
     //a way to add someone to the list of catchers
     public void addListener(FragmentManagerListener toAdd){
