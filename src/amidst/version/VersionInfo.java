@@ -4,6 +4,7 @@ package amidst.version;
  */
 public enum VersionInfo {
 	unknown(null),
+	V1_8_1("wduyrdnq[Lqu;sp[J[[Jsa"),
 	V1_8("wbuwrcnp[Lqt;sn[J[[Jry"),
 	V14w21b("tjseoylw[Loq;qd[J[[Jpo"),
 	V1_7_10("riqinckb[Lmt;oi[J[[Jns"),
@@ -52,7 +53,7 @@ public enum VersionInfo {
 	V1_9pre3("to"),
 	V1_9pre2("sv"),
 	V1_9pre1("sq"),
-	V1_8_1("[Bhwqpyrrviqswdbzdqurkhqrgviwbomnabjrxmafvoeacfer[J[Jaddmkbb");
+	Vbeta_1_8_1("[Bhwqpyrrviqswdbzdqurkhqrgviwbomnabjrxmafvoeacfer[J[Jaddmkbb"); // Had to rename from V1_8_1 - should it just be removed?
 	
 	public final String versionId;
 	
