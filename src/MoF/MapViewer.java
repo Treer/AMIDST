@@ -110,7 +110,9 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 	
 	public void dispose() {
 		Log.debug("Disposing of map viewer.");
-		worldMap.dispose();
+		fragmentManager = null;
+		worldMap.dispose(); // this will also clean up the fragmentManager (passed to it during construction)
+		exporter.dispose();
 		menu.removeAll();
 		proj = null;
 	}

@@ -415,7 +415,11 @@ public class MapExporter implements FragmentManagerListener {
 		addRequest(new ExportRequest(RequestType.NetherLocationList, f));
 	}
 	
-	
+	public void dispose() {
+		fragmentManager = null;
+		exportMap.dispose(); // this will also clean up the fragmentManager (passed to it during construction)
+	}
+		
 	public MapExporter(long seed) {
 		
 		this.seed = String.format("%d", seed);
