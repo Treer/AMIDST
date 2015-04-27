@@ -66,8 +66,9 @@ public class VersionSelectWindow extends JFrame {
 				}
 				versionSelector.addVersion(new RemoteVersionComponent());
 				
-				if (selectedProfile != null)
+				if (selectedProfile != null) {
 					versionSelector.select(selectedProfile);
+				}
 				
 				pack();
 				try {
@@ -80,6 +81,7 @@ public class VersionSelectWindow extends JFrame {
 		versionSelector.setEmptyMessage("Scanning...");
 		
 		JScrollPane scrollPane = new JScrollPane(versionSelector);
+		scrollPane.getVerticalScrollBar().setUnitIncrement(12);
 		// The preferred width should be at least a scrollbar-width wider than  
 		// the VersionComponent's preferredSize width 500 (so 520?).
 		// The preferred height should allow the dialog to fit easily on a 720p

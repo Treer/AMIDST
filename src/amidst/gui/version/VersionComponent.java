@@ -10,9 +10,10 @@ import javax.swing.JComponent;
 import amidst.resources.ResourceLoader;
 
 public abstract class VersionComponent extends JComponent {
-	protected static Font nameFont = new Font("arial", Font.BOLD, 30);
-	protected static Font statusFont = new Font("arial", Font.BOLD, 10);
-	protected static Font versionFont = new Font("arial", Font.BOLD, 16);
+	protected static Font nameFont       = new Font("arial", Font.BOLD, 30);
+	protected static Font remoteNameFont = new Font("arial", Font.BOLD | Font.ITALIC, 26);
+	protected static Font statusFont     = new Font("arial", Font.BOLD, 10);
+	protected static Font versionFont    = new Font("arial", Font.BOLD, 16);
 	protected static BufferedImage activeIcon   = ResourceLoader.getImage("active_profile.png");
 	protected static BufferedImage inactiveIcon = ResourceLoader.getImage("inactive_profile.png");
 	protected static BufferedImage loadingIcon  = ResourceLoader.getImage("loading_profile.png");
