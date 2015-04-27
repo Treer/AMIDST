@@ -126,6 +126,16 @@ public class OceanMonumentLayer extends IconLayer {
 		
 		boolean result = false;
 		
+		/* There's a bug at seed -1364077613 where an ocean monument at 312,40 isn't
+		 * shown, because that co-ordinate falls on an ocean biome rather than a deep ocean
+		 * biome. Perhaps we have a fence-post or rounding error?
+		 * http://chunkbase.com/apps/ocean-monument-finder doesn't have this bug which makes me suspect the isValidBiome() code
+		 
+		int tempX = chunkX * 16 + 8;
+		int tempY = chunkY * 16 + 8;
+		boolean foundMonument = tempX == 312 && tempY == 40;
+		//*/	
+		
 		byte maxDistanceBetweenScatteredFeatures = 32;
 		byte minDistanceBetweenScatteredFeatures = 5;
 		int structureSize = 29;
