@@ -54,14 +54,16 @@ public class VersionSelectWindow extends JFrame {
 				MinecraftVersion[] localVersions = versionFactory.getLocalVersions();
 				String selectedProfile = Options.instance.lastProfile.get();
 				
-				if (profileVersions == null) {
+				if ((profileVersions == null || profileVersions.length == 0) && (localVersions == null || localVersions.length == 0)) {
 					versionSelector.setEmptyMessage("Empty");
 					return;
 				}
-				for (int i = 0; i < profileVersions.length; i++)
+				for (int i = 0; i < profileVersions.length; i++) {
 					versionSelector.addVersion(new ProfileVersionComponent(profileVersions[i]));
-				for (int i = 0; i < localVersions.length; i++)
-					versionSelector.addVersion(new LocalVersionComponent(localVersions[i]));				
+				}
+				for (int i = 0; i < localVersions.length; i++) {
+					versionSelector.addVersion(new LocalVersionComponent(localVersions[i]));
+				}
 				versionSelector.addVersion(new RemoteVersionComponent());
 				
 				if (selectedProfile != null)
@@ -78,7 +80,12 @@ public class VersionSelectWindow extends JFrame {
 		versionSelector.setEmptyMessage("Scanning...");
 		
 		JScrollPane scrollPane = new JScrollPane(versionSelector);
-		add(scrollPane, "grow, push, h 80::");
+		// The preferred width should be at least a scrollbar-width wider than  
+		// the VersionComponent's preferredSize width 500 (so 520?).
+		// The preferred height should allow the dialog to fit easily on a 720p
+		// display, while being nicely divisible by VersionComponent's height
+		// of 40 (so 520 again then?).
+		add(scrollPane, "grow, push, w :520:, h 80:520:"); 
 		pack();
 		setLocation(200, 200);
 		setVisible(true);
