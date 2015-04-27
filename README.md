@@ -12,7 +12,7 @@ Requirements
 ------------
 800 MB of RAM - This is needed if you wish to export, as a large area of the Minecraft map is generated before exporting the locations and oceans. So, if running from the command line, try:
 
-    java -Xmx1024M -jar AmidstExporter.jar
+    java -Xmx1024M -jar ./AmidstExporter.jar
 
 
 License and warranty
