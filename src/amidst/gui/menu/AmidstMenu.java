@@ -509,6 +509,7 @@ public class AmidstMenu extends JMenuBar {
 					public void actionPerformed(ActionEvent e) {
 						JFileChooser fc = new JFileChooser();
 						fc.setFileFilter(new PNGFileFilter());
+						fc.setSelectedFile(new File("screenshot" + (Options.instance.seedText == null ? String.format("%d", Options.instance.seed) : "_" + Options.instance.seedText) + ".png"));
 						fc.setAcceptAllFileFilterUsed(false);
 						int returnVal = fc.showSaveDialog(window);
 						
