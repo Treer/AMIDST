@@ -64,7 +64,16 @@ public class VersionSelectWindow extends JFrame {
 				for (int i = 0; i < localVersions.length; i++) {
 					versionSelector.addVersion(new LocalVersionComponent(localVersions[i]));
 				}
+				
+				/* Remote profiles commented out, due to Skiphs information about them:
+				 * 
+				 * "I'm afraid I don't know where the source is for the other half of it 
+				 * anymore, but the original idea was to use a Forge mod to make the biome 
+				 * map generation calls, and then send the data back to AMIDST. While it 
+				 * shouldn't be too hard, it's certainly not a perfect system."
+				 
 				versionSelector.addVersion(new RemoteVersionComponent());
+				*/
 				
 				if (selectedProfile != null) {
 					versionSelector.select(selectedProfile);

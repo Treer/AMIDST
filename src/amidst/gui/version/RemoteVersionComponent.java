@@ -11,6 +11,12 @@ import amidst.Options;
 import amidst.minecraft.MinecraftUtil;
 import amidst.minecraft.remote.RemoteMinecraft;
 
+// Skiphs provided some information on the purpose of remote profiles:
+//
+// "I'm afraid I don't know where the source is for the other half of it 
+// anymore, but the original idea was to use a Forge mod to make the biome 
+// map generation calls, and then send the data back to AMIDST. While it 
+// shouldn't be too hard, it's certainly not a perfect system."
 public class RemoteVersionComponent extends VersionComponent {
 	private String remoteAddress;
 	private String name;
