@@ -13,7 +13,7 @@ public class MinecraftUtil {
 	private static Object biomeDataLock = new Object(); 
 	
 	/** Returns a copy of the biome data (threadsafe). */
-	public static int[] getBiomeData(int x, int y, int width, int height) {
+	public static int[] getBiomeData(int x, int y, int width, int height, boolean useQuarterResolutionMap) {
 
 		int arrayLength = width * height;
 		int[] result = new int[arrayLength];
@@ -21,13 +21,14 @@ public class MinecraftUtil {
 		synchronized (biomeDataLock) {
 			// getBiomeData() reuses the array it returns, so lock against calling it 
 			// again until we have copied the data.
-			int[] biomeData = minecraftInterface.getBiomeData(x, y, width, height);		
+			int[] biomeData = minecraftInterface.getBiomeData(x, y, width, height, useQuarterResolutionMap);		
 			for (int i = 0; i < arrayLength; i++) result[i] = biomeData[i];
 		}		
 		return result;
 	}
 	
 	public static Point findValidLocation(int searchX, int searchY, int size, List<Biome> paramList, Random random) {
+		// TODO: Find out if we should useQuarterResolutionMap or not
 		// TODO: Clean up this code
 		int x1 = searchX - size >> 2;
 		int y1 = searchY - size >> 2;
@@ -36,7 +37,7 @@ public class MinecraftUtil {
 		
 		int width = x2 - x1 + 1;
 		int height = y2 - y1 + 1;
-		int[] arrayOfInt = getBiomeData(x1, y1, width, height);
+		int[] arrayOfInt = getBiomeData(x1, y1, width, height, true);
 		Point location = null;
 		int numberOfValidFound = 0;
 		for (int i = 0; i < width*height; i++) {
@@ -54,15 +55,15 @@ public class MinecraftUtil {
 		return location;
 	}
 	public static boolean isValidBiome(int x, int y, int size, List<Biome> validBiomes) {
-		int x1 = x - size >> 2;
-		int y1 = y - size >> 2;
-		int x2 = x + size >> 2;
-		int y2 = y + size >> 2;
+		int x1 = x - size;
+		int y1 = y - size;
+		int x2 = x + size;
+		int y2 = y + size;
 		
 		int width = x2 - x1 + 1;
 		int height = y2 - y1 + 1;
 		
-		int[] arrayOfInt = getBiomeData(x1, y1, width, height);
+		int[] arrayOfInt = getBiomeData(x1, y1, width, height, false);
 		for (int i = 0; i < width * height; i++) {
 			Biome localBiome = Biome.biomes[arrayOfInt[i]];
 			if (!validBiomes.contains(localBiome)) return false;
