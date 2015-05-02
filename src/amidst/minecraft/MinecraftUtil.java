@@ -28,7 +28,6 @@ public class MinecraftUtil {
 	}
 	
 	public static Point findValidLocation(int searchX, int searchY, int size, List<Biome> paramList, Random random) {
-		// TODO: Find out if we should useQuarterResolutionMap or not
 		// TODO: Clean up this code
 		int x1 = searchX - size >> 2;
 		int y1 = searchY - size >> 2;
@@ -37,7 +36,7 @@ public class MinecraftUtil {
 		
 		int width = x2 - x1 + 1;
 		int height = y2 - y1 + 1;
-		int[] arrayOfInt = getBiomeData(x1, y1, width, height, true);
+		int[] arrayOfInt = getBiomeData(x1, y1, width, height, true); // createSpawnPosition() invokes getBiomesToSpawnIn() which uses the quarter-scale biome map
 		Point location = null;
 		int numberOfValidFound = 0;
 		for (int i = 0; i < width*height; i++) {
@@ -59,7 +58,7 @@ public class MinecraftUtil {
 	 * Gets the biome located at the block-coordinates.
 	 * This is not a fast routine, it was added for rare things like
 	 * accurately testing structures.
-	 * (uses the 1:1 scale biome-map)
+	 * (uses the 1:1 scale full-resolution biome-map)
 	 * @return Assume this may return null.
 	 */
 	public static Biome getBiomeAt(int x, int y) {
@@ -68,6 +67,7 @@ public class MinecraftUtil {
 		return Biome.biomes[arrayOfInt[0] & 0xFF];
 	}
 	
+	/** Calculated using quarter-resolution biome data, to match Minecraft's WorldChunkManager.areBiomesViable() */
 	public static boolean isValidBiome(int x, int y, int size, List<Biome> validBiomes) {
 		int x1 = x - size >> 2;
 		int y1 = y - size >> 2;

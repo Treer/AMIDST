@@ -106,7 +106,7 @@ public class TempleLayer extends IconLayer {
 		i1 += random.nextInt(maxDistanceBetweenScatteredFeatures - minDistanceBetweenScatteredFeatures);
 
 		if (k == n && m == i1) {
-			// This is a feature biome
+			// This is a potential feature biome			
 			
 			// Since the structure-size that would be passed to MinecraftUtil.isValidBiome() 
 			// is 0, we can use MinecraftUtil.getBiomeAt() here instead, which tells us what kind of 

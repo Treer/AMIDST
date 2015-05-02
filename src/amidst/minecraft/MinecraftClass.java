@@ -1,24 +1,20 @@
 package amidst.minecraft;
 
-import java.lang.reflect.Constructor;
 import java.util.HashMap;
 
 
 public class MinecraftClass {
 	private String name, className;
-	private HashMap<String, MinecraftMethod> methods;
 	private Class<?> clazz;
 	private HashMap<String, MinecraftProperty> propertiesByName;
 	private HashMap<String, MinecraftProperty> propertiesByObfName;
 	private HashMap<String, MinecraftMethod> methodsByName;
 	private HashMap<String, MinecraftMethod> methodsByObfName;
 	private HashMap<String, MinecraftConstructor> constructorByName;
-	private Constructor<?>[] constructors;
 	private Minecraft minecraft;
 	public MinecraftClass(String name, String className) {
 		this.name = name;
 		this.className = className;
-		methods = new HashMap<String, MinecraftMethod>();
 		propertiesByName = new HashMap<String, MinecraftProperty>();
 		propertiesByObfName = new HashMap<String, MinecraftProperty>();
 		methodsByName = new HashMap<String, MinecraftMethod>();

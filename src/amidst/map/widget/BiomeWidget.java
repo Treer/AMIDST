@@ -8,8 +8,6 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 
 import amidst.logging.Log;
-import amidst.map.FragmentManager;
-import amidst.map.ImageLayer;
 import amidst.map.layers.BiomeLayer;
 import amidst.minecraft.Biome;
 import MoF.MapViewer;
