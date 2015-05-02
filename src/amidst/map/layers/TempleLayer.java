@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 import amidst.Options;
+import amidst.logging.Log;
 import amidst.map.Fragment;
 import amidst.map.IconLayer;
 import amidst.map.MapObjectDesertTemple;
@@ -34,15 +35,18 @@ public class TempleLayer extends IconLayer {
 			for (int y = 0; y < size; y++) {
 				int chunkX = x + frag.getChunkX();
 				int chunkY = y + frag.getChunkY();
-				if (checkChunk(chunkX, chunkY)) {
-					//getValidTemple(frag, x << 4, y << 4);
-					String biomeName = BiomeLayer.getBiomeNameForFragment(frag, x << 4, y << 4);
-					if (biomeName.equals("Swampland"))
+				Biome chunkBiome = checkChunk(chunkX, chunkY);
+				if (chunkBiome != null) {
+					
+					if (chunkBiome == Biome.swampland) {
 						frag.addObject(new MapObjectWitchHut(x << 4, y << 4).setParent(this));
-					else if (biomeName.contains("Jungle"))
+					} else if (chunkBiome.name.contains("Jungle")) {
 						frag.addObject(new MapObjectJungleTemple(x << 4, y << 4).setParent(this));
-					else 
+					} else if (chunkBiome.name.contains("Desert")) {					
 						frag.addObject(new MapObjectDesertTemple(x << 4, y << 4).setParent(this));
+					} else {			
+						Log.e("No known structure for this biome type. checkChunk() may be faulting.");
+					}
 				}
 			}
 		}
@@ -74,7 +78,16 @@ public class TempleLayer extends IconLayer {
 		
 		return Arrays.asList(validBiomes);
 	}
-	public boolean checkChunk(int chunkX, int chunkY) {
+	
+	/**
+	 * @return null if there is no structure in the chunk, otherwise 
+	 * returns the biome (from validBiomes) that determines the type
+	 * of structure.
+	 */
+	public Biome checkChunk(int chunkX, int chunkY) {
+
+		Biome result = null;
+		
 		int maxDistanceBetweenScatteredFeatures = 32;
 		int minDistanceBetweenScatteredFeatures = 8;
 		
@@ -91,7 +104,16 @@ public class TempleLayer extends IconLayer {
 		i1 *= maxDistanceBetweenScatteredFeatures;
 		n += random.nextInt(maxDistanceBetweenScatteredFeatures - minDistanceBetweenScatteredFeatures);
 		i1 += random.nextInt(maxDistanceBetweenScatteredFeatures - minDistanceBetweenScatteredFeatures);
-		
-		return (k == n) && (m == i1) && MinecraftUtil.isValidBiome(k * 16 + 8, m * 16 + 8, 0, validBiomes);
+
+		if (k == n && m == i1) {
+			// This is a feature biome
+			
+			// Since the structure-size that would be passed to MinecraftUtil.isValidBiome() 
+			// is 0, we can use MinecraftUtil.getBiomeAt() here instead, which tells us what kind of 
+			// structure it is.
+			Biome chunkBiome = MinecraftUtil.getBiomeAt(k * 16 + 8, m * 16 + 8);
+			if (validBiomes.contains(chunkBiome)) result = chunkBiome;
+		}	
+		return result;
 	}
 }
