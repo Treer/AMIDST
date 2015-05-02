@@ -82,9 +82,7 @@ public class OceanMonumentLayer extends IconLayer {
 		}
 	}
 	
-	/**
-	 * @return true if Minecraft is v1.8 or greater
-	 */
+	/** @return true if Minecraft is v1.8 or greater */
 	public static boolean MinecraftVersionSupportsOceanMoments() {
 		return MinecraftUtil.getVersion().isAtLeast(VersionInfo.V1_8);
 	}
@@ -112,9 +110,7 @@ public class OceanMonumentLayer extends IconLayer {
 		}
 	}
 	 
-    /**
-     * puts the World Random seed to a specific state dependent on the inputs
-     */
+    /** puts the World Random seed to a specific state dependent on the inputs */
     public void setRandomSeed(int a, int b, int structure_magic_number)
     {
         long positionSeed = (long)a * 341873128712L + (long)b * 132897987541L + Options.instance.seed + (long)structure_magic_number;
@@ -126,28 +122,18 @@ public class OceanMonumentLayer extends IconLayer {
 		
 		boolean result = false;
 		
-		/* There's a bug at seed -1364077613 where an ocean monument at 312,40 isn't
-		 * shown, because that co-ordinate falls on an ocean biome rather than a deep ocean
-		 * biome. Perhaps we have a fence-post or rounding error?
-		 * http://chunkbase.com/apps/ocean-monument-finder doesn't have this bug which makes me suspect the isValidBiome() code
-		 
-		int tempX = chunkX * 16 + 8;
-		int tempY = chunkY * 16 + 8;
-		boolean foundMonument = tempX == 312 && tempY == 40;
-		//*/	
-		
 		byte maxDistanceBetweenScatteredFeatures = 32;
 		byte minDistanceBetweenScatteredFeatures = 5;
 		int structureSize = 29;
 		int structureMagicNumber = 10387313; // 10387313 is the magic salt for ocean monuments
 		
-		int chunkX_original = chunkX;
-		int chunkY_original = chunkY;
-		if (chunkX < 0) chunkX -= maxDistanceBetweenScatteredFeatures - 1;
-		if (chunkY < 0) chunkY -= maxDistanceBetweenScatteredFeatures - 1;
+		int chunkXadj = chunkX;
+		int chunkYadj = chunkY;
+		if (chunkXadj < 0) chunkXadj -= maxDistanceBetweenScatteredFeatures - 1;
+		if (chunkYadj < 0) chunkYadj -= maxDistanceBetweenScatteredFeatures - 1;
 		
-		int a = chunkX / maxDistanceBetweenScatteredFeatures;
-		int b = chunkY / maxDistanceBetweenScatteredFeatures;
+		int a = chunkXadj / maxDistanceBetweenScatteredFeatures;
+		int b = chunkYadj / maxDistanceBetweenScatteredFeatures;
 		
 		setRandomSeed(a, b, structureMagicNumber);		
 
@@ -157,18 +143,12 @@ public class OceanMonumentLayer extends IconLayer {
 		a += (random.nextInt(distanceRange) + random.nextInt(distanceRange)) / 2;
 		b += (random.nextInt(distanceRange) + random.nextInt(distanceRange)) / 2;
 		
-		chunkX = chunkX_original;
-		chunkY = chunkY_original;
 		if ((chunkX == a) && (chunkY == b)) {
 
-			/* Should be identical, but is harder to read
-			// getBiomeGenAt(null, chunkX * 16 + 8, chunkY * 16 + 8, 1, 1, false) &&					
-			int[] biomeData = MinecraftUtil.getBiomeData((chunkX * 16 + 8) >> 2, (chunkY * 16 + 8) >> 2, 1, 1);
-			if (biomeData[0] == Biome.deepOcean.index || biomeData[0] == Biome.deepOceanM.index) {
-				result = MinecraftUtil.isValidBiome(chunkX * 16 + 8, chunkY * 16 + 8, structureSize, validSurroundingBiomes); 
-			}*/
+			// Note that getBiomeAt() is full-resolution biome data, while isValidBiome() is calculated using
+			// quarter-resolution biome data. This is identical to how Minecraft calculates it.
 			result = 
-				MinecraftUtil.isValidBiome(chunkX * 16 + 8, chunkY * 16 + 8, 0, validBiomes) &&
+				MinecraftUtil.getBiomeAt(  chunkX * 16 + 8, chunkY * 16 + 8) == Biome.deepOcean &&
 				MinecraftUtil.isValidBiome(chunkX * 16 + 8, chunkY * 16 + 8, structureSize, validSurroundingBiomes); 
 		}
 		return result;
