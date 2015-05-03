@@ -116,7 +116,7 @@ public class VillageLayer extends IconLayer {
 				// in the game, however values above 2 will eliminate more villages that do exist (e.g. [2672, -5424] and 
 				// [3376, -3504]).
 				// So in lieu of a larger data set, lets set arbitraryConstant to 2 ;)
-				int arbitraryConstant = 0;
+				int arbitraryConstant = 2;
 				int wellStructureSize = (x2 - x1) / 2 + arbitraryConstant;
 							
 				boolean canSpawnWellAtCoords = MinecraftUtil.isValidBiome(wellX, wellY, wellStructureSize, validBiomes);
