@@ -16,6 +16,7 @@ import amidst.map.MapObjectPlayer;
 import amidst.map.layers.BiomeIconLayer;
 import amidst.map.layers.BiomeLayer;
 import amidst.map.layers.GridLayer;
+import amidst.map.layers.MineshaftLayer;
 import amidst.map.layers.NetherFortressLayer;
 import amidst.map.layers.OceanMaskLayer;
 import amidst.map.layers.OceanMonumentLayer;
@@ -170,6 +171,7 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 				new TempleLayer(),
 				new SpawnLayer(),
 				new NetherFortressLayer(),
+				new MineshaftLayer(),
 				
 				// Including BiomeIconLayers in the MapViewer is only useful for debug purposes,
 				// there's no need to display this data in the main window - the BiomeIconLayers 

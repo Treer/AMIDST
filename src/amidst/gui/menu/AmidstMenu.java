@@ -489,9 +489,14 @@ public class AmidstMenu extends JMenuBar {
 					KeyEvent.VK_8,
 					Options.instance.showNetherFortresses));
 				
+				add(new DisplayingCheckbox("Mineshaft Icons",
+					ResourceLoader.getImage("mineshaft.png"),
+					KeyEvent.VK_9,
+					Options.instance.showMineshafts));
+				
 				add(new DisplayingCheckbox("Spawn Location Icon",
 						ResourceLoader.getImage("spawn.png"),
-						KeyEvent.VK_9,
+						KeyEvent.VK_0,
 						Options.instance.showSpawn));
 				
 			}
