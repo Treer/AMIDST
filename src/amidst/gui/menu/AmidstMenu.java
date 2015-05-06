@@ -554,7 +554,7 @@ public class AmidstMenu extends JMenuBar {
 			if (BiomeColorProfile.isEnabled)
 				add(new BiomeColorMenu());
 			add(new WorldTypeMenu());
-			setMnemonic(KeyEvent.VK_M);
+			setMnemonic(KeyEvent.VK_O);
 		}
 		private class BiomeColorMenu extends JMenu {
 			private ArrayList<JCheckBoxMenuItem> profileCheckboxes = new ArrayList<JCheckBoxMenuItem>();
@@ -686,6 +686,7 @@ public class AmidstMenu extends JMenuBar {
 	private class HelpMenu extends JMenu {
 		private HelpMenu() {
 			super("Help");
+			setMnemonic(KeyEvent.VK_H);
 			
 			add(new JMenuItem("Check for updates") {{
 				addActionListener(new ActionListener() {
