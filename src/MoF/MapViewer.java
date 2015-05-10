@@ -204,13 +204,15 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 			double lastZoom = curZoom;
 			curZoom = (targetZoom + curZoom) * 0.5;
 			
-			Point2D.Double targetZoom = worldMap.getScaled(lastZoom, curZoom, zoomMouse);
-			worldMap.moveBy(targetZoom);
-			worldMap.setZoom(curZoom);
+			if(zoomMouse != null) {
+				Point2D.Double targetZoom = worldMap.getScaled(lastZoom, curZoom, zoomMouse);
+				worldMap.moveBy(targetZoom);
+				worldMap.setZoom(curZoom);
+			}
 		}
 		
-		Point curMouse = getMousePosition();
 		if (lastMouse != null) {
+			Point curMouse = getMousePosition();
 			if (curMouse != null) {
 				double difX = curMouse.x - lastMouse.x;
 				double difY = curMouse.y - lastMouse.y;
@@ -290,7 +292,7 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 					return;
 			}
 		}
-		adjustZoom(getMousePosition(), notches);
+		adjustZoom(mouse, notches);
 	}
 	@Override
 	public void mouseClicked(MouseEvent e) {
@@ -347,7 +349,7 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		if (e.isPopupTrigger() && MinecraftUtil.getVersion().saveEnabled()) {
-			lastRightClick = getMousePosition();
+			lastRightClick = e.getPoint(); // Don't use getMousePosition() because when computer is swapping/grinding, mouse may have moved out of window before execution reaches here.
 			if (proj.saveLoaded) {
 				menu.show(e.getComponent(), e.getX(), e.getY());
 			}
