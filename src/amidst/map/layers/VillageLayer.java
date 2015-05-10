@@ -31,7 +31,9 @@ public class VillageLayer extends IconLayer {
 				int chunkX = x + frag.getChunkX();
 				int chunkY = y + frag.getChunkY();
 				if (checkChunk(chunkX, chunkY)) {
-					frag.addObject(new MapObjectVillage(x << 4, y << 4).setParent(this));
+					// Unlike other structures, village wells don't spawn in the center of the chunk,
+					// so we add 4 to the chunk coords instead of 8
+					frag.addObject(new MapObjectVillage((x << 4) + 4, (y << 4) + 4).setParent(this));
 				}
 			}
 		}

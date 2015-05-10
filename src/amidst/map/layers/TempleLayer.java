@@ -39,11 +39,11 @@ public class TempleLayer extends IconLayer {
 				if (chunkBiome != null) {
 					
 					if (chunkBiome == Biome.swampland) {
-						frag.addObject(new MapObjectWitchHut(x << 4, y << 4).setParent(this));
+						frag.addObject(new MapObjectWitchHut((x << 4) + 8, (y << 4) + 8).setParent(this));
 					} else if (chunkBiome.name.contains("Jungle")) {
-						frag.addObject(new MapObjectJungleTemple(x << 4, y << 4).setParent(this));
+						frag.addObject(new MapObjectJungleTemple((x << 4) + 8, (y << 4) + 8).setParent(this));
 					} else if (chunkBiome.name.contains("Desert")) {					
-						frag.addObject(new MapObjectDesertTemple(x << 4, y << 4).setParent(this));
+						frag.addObject(new MapObjectDesertTemple((x << 4) + 8, (y << 4) + 8).setParent(this));
 					} else {			
 						Log.e("No known structure for this biome type. checkChunk() may be faulting.");
 					}

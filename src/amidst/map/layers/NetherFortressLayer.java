@@ -24,7 +24,11 @@ public class NetherFortressLayer extends IconLayer {
 				int chunkX = x + frag.getChunkX();
 				int chunkY = y + frag.getChunkY();
 				if (checkChunk(chunkX, chunkY)) {
-					frag.addObject(new MapObjectNether(x << 4, y << 4).setParent(this));
+					// Found that the center of the junction is +11, +11 from the chunk 
+					// coords empirically (using v1.8.4), so I don't know why this is.
+					// (tho suspect it'll be because a corner of the junction starts at the 
+					// center of the chunk, which is +8, +8)
+					frag.addObject(new MapObjectNether((x << 4) + 11, (y << 4) + 11).setParent(this));
 				}
 			}
 		}

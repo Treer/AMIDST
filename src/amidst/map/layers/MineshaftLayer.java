@@ -30,7 +30,7 @@ public class MineshaftLayer extends IconLayer {
 					int chunkX = x + frag.getChunkX();
 					int chunkY = y + frag.getChunkY();
 					if (checkChunk(chunkX, chunkY)) {
-						frag.addObject(new MapObjectMineshaft(x << 4, y << 4).setParent(this));
+						frag.addObject(new MapObjectMineshaft((x << 4) + 8, (y << 4) + 8).setParent(this));
 					}
 				}
 			}

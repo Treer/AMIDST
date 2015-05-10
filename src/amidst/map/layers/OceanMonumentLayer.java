@@ -103,7 +103,7 @@ public class OceanMonumentLayer extends IconLayer {
 					int chunkX = x + frag.getChunkX();
 					int chunkY = y + frag.getChunkY();
 					if (checkChunk(chunkX, chunkY)) {
-						frag.addObject(new MapObjectOceanMonument(x << 4, y << 4).setParent(this));
+						frag.addObject(new MapObjectOceanMonument((x << 4) + 8, (y << 4) + 8).setParent(this));
 					}
 				}
 			}
@@ -146,7 +146,7 @@ public class OceanMonumentLayer extends IconLayer {
 		if ((chunkX == a) && (chunkY == b)) {
 
 			// Note that getBiomeAt() is full-resolution biome data, while isValidBiome() is calculated using
-			// quarter-resolution biome data. This is identical to how Minecraft calculates it.
+			// quarter-resolution biome data. This is identical to how Minecraft calculates monuments.
 			result = 
 				MinecraftUtil.getBiomeAt(  chunkX * 16 + 8, chunkY * 16 + 8) == Biome.deepOcean &&
 				MinecraftUtil.isValidBiome(chunkX * 16 + 8, chunkY * 16 + 8, structureSize, validSurroundingBiomes); 
