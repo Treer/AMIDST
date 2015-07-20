@@ -17,8 +17,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException; 
 
 public class UpdateManager extends Thread {
-	public static final String updateURL = "https://sites.google.com/site/mothfinder/update.xml";
-	public static final String updateUnstableURL = "https://sites.google.com/site/mothfinder/update_unstable.xml";
+	public static final String updateURL         = "https://raw.githubusercontent.com/Treer/Amidst/AmidstExporter/updatedata/update.xml";
+	public static final String updateUnstableURL = "https://raw.githubusercontent.com/Treer/Amidst/AmidstExporter/updatedata/update_prerelease.xml";
 	private JFrame window;
 	private boolean silent;
 	public UpdateManager(JFrame window) {
@@ -56,13 +56,13 @@ public class UpdateManager extends Thread {
 			}
 			int n = JOptionPane.NO_OPTION;
 			
-			if (major > Amidst.version_major) {
+			if (major > Amidst.exporter_version_major) {
 				n = JOptionPane.showConfirmDialog(
 					window,
 					"A new version was found. Would you like to update?",
 					"Update Found",
 					JOptionPane.YES_NO_OPTION);
-			} else if ((major == Amidst.version_major) && (minor > Amidst.version_minor)) {
+			} else if ((major == Amidst.exporter_version_major) && (minor > Amidst.exporter_version_minor)) {
 				n = JOptionPane.showConfirmDialog(
 					window,
 					"A minor revision was found. Update?",
