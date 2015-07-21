@@ -41,6 +41,30 @@ public class MapObject extends Point {
 		return Options.instance.showVillages.isSelected();
 	}
 	
+	public boolean isLocatedInNether() {
+		return false;
+	}
+
+	public boolean isNetherCoordinates() {
+		return false;
+	}
+	
+	public Point getNetherCoordinates() {
+		if (isNetherCoordinates()) {		
+			return new Point(rx, ry);
+		} else {
+			return new Point(rx >> 3, ry >> 3);		
+		}
+	}
+
+	public Point getOverworldCoordinates() {
+		if (isNetherCoordinates()) {		
+			return new Point(rx << 3, ry << 3);
+		} else {
+			return new Point(rx, ry);		
+		}
+	}
+	
 	public MapObject setParent(IconLayer layer) {
 		parentLayer = layer;
 		return this;

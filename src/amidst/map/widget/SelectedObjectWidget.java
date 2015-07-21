@@ -21,11 +21,29 @@ public class SelectedObjectWidget extends PanelWidget {
 	public void draw(Graphics2D g2d, float time) {
 		if (targetVisibility) {
 			MapObject selectedObject = mapViewer.getSelectedObject();
-			message = selectedObject.getName() + " [" + selectedObject.rx + ", " + selectedObject.ry + "]";
+			
+			message = selectedObject.getName();
+			if (selectedObject.isLocatedInNether()) {
+				
+				message += "\n      Nether [" + selectedObject.getNetherCoordinates().x + ", " + selectedObject.getNetherCoordinates().y + "]";
+				message += "\n      Overworld [" + selectedObject.getOverworldCoordinates().x + ", " + selectedObject.getOverworldCoordinates().y + "]";							
+			} else {
+				message += " [" + selectedObject.rx + ", " + selectedObject.ry + "]";
+			}
 			icon = selectedObject.getImage();
 		}
 
-		setWidth(45 + mapViewer.getFontMetrics().stringWidth(message));
+		int maxStringWidth = 0;
+		int stringHeight = 0;		
+		for (String line : message.split("\n")) {
+			stringHeight += g2d.getFontMetrics().getHeight();
+			maxStringWidth = Math.max(maxStringWidth, mapViewer.getFontMetrics().stringWidth(line));
+	    }				
+		
+		setDimensions(
+			45 + maxStringWidth,
+			Math.max(10/*icon-margins*/ + 25/*icon-size*/, 17/*font-margins*/ + stringHeight)
+		);		
 		super.draw(g2d, time);
 
 		g2d.setColor(textColor);
@@ -34,8 +52,17 @@ public class SelectedObjectWidget extends PanelWidget {
 		double ratio = imgWidth/imgHeight;
 		
 		g2d.drawImage(icon, x + 5, y + 5, (int)(25.*ratio), 25, null);
-		g2d.drawString(message, x + 35, y + 23);
+		drawMultilineString(g2d, message, x + 35, y + 23);
 	}
+	
+	void drawMultilineString(Graphics2D g2d, String text, int x, int y) {
+		
+		int lineHeight = g2d.getFontMetrics().getHeight();
+	    for (String line : text.split("\n")) {
+	    	g2d.drawString(line, x, y);
+	    	y += lineHeight;
+	    }
+	}	
 	
 	@Override
 	protected boolean onVisibilityCheck() {
