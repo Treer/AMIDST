@@ -65,6 +65,16 @@ public class MapObject extends Point {
 		}
 	}
 	
+	/** returns Nether coords for Nether objects and Overworld coords for Overworld objects */
+	public Point getNaturalCoordinates() {
+		if (isLocatedInNether()) {		
+			return getNetherCoordinates();
+		} else {
+			return getOverworldCoordinates();		
+		}
+	}
+	
+	
 	public MapObject setParent(IconLayer layer) {
 		parentLayer = layer;
 		return this;

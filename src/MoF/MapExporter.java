@@ -169,7 +169,8 @@ public class MapExporter implements FragmentManagerListener {
 				}			
 			}
 			
-			String result = String.format("%1$-16s %2$5d, %3$5d", entryType + ",", location.rx, location.ry);  
+			Point naturalCoords = location.getNaturalCoordinates();			
+			String result = String.format("%1$-16s %2$5d, %3$5d", entryType + ",", naturalCoords.x, naturalCoords.y);  
 			
 			int column = 3; // entryType, x, and z were the first 3 columns.
 			if (caption != null) {
@@ -316,8 +317,9 @@ public class MapExporter implements FragmentManagerListener {
 				for(MapObject location : mapObjects) {				
 					LocationTypeInfo info = locationTable.get(location.type);
 					if (info != null && !info.isSpoilerLocation) {
-						int x = Math.abs(location.rx);
-						int y = Math.abs(location.ry);
+						Point naturalCoords = location.getNaturalCoordinates();
+						int x = Math.abs(naturalCoords.x);
+						int y = Math.abs(naturalCoords.y);
 						if (x <= rangeLimit && y <= rangeLimit && (x > lastRange || y > lastRange)) {						
 							writer.println(info.LocationFileEntry(location, exportMap));
 						}
