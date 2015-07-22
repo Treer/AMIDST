@@ -10,9 +10,20 @@ import amidst.minecraft.MinecraftUtil;
 import amidst.version.VersionInfo;
 
 public class MineshaftLayer extends IconLayer {
+	private final static double chancePerChunk_v1_7 = 0.004D;
+	private final static double chancePerChunk_v1_6 = 0.01D;
+	
 	private Random random = new Random();
+	private double chancePerChunk;
 
 	public MineshaftLayer() {
+		
+		if (MinecraftUtil.getVersion().isAtLeast(VersionInfo.V1_7_2)) {
+			// Mineshafts became less common from version 1.7.2 onward 
+			chancePerChunk = chancePerChunk_v1_7;			
+		} else {
+			chancePerChunk = chancePerChunk_v1_6;			
+		}		
 	}
 
 	@Override
@@ -41,9 +52,6 @@ public class MineshaftLayer extends IconLayer {
 	public static boolean MinecraftVersionIsSupported() {
 		return MinecraftUtil.getVersion().isAtLeast(VersionInfo.V1_4_2);
 	}
-	
-	
-	double _e = 0.004D;
 
 	public boolean checkChunk(int chunkX, int chunkY) {
         random.setSeed(Options.instance.seed);
@@ -55,6 +63,6 @@ public class MineshaftLayer extends IconLayer {
 		random.setSeed(var13 ^ var15 ^ Options.instance.seed);
 		random.nextInt();
 
-		return random.nextDouble() < _e && random.nextInt(80) < Math.max(Math.abs(chunkX), Math.abs(chunkY));
+		return (random.nextDouble() < chancePerChunk) && random.nextInt(80) < Math.max(Math.abs(chunkX), Math.abs(chunkY));
 	}
 }
