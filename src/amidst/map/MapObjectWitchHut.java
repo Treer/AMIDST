@@ -4,4 +4,7 @@ public class MapObjectWitchHut extends MapObject {
 	public MapObjectWitchHut(int eX, int eY) {
 		super(MapMarkers.WITCH, eX, eY);
 	}
+	
+	@Override
+	public String getName() { return "Witch hut"; }	
 }

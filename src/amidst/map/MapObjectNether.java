@@ -12,10 +12,12 @@ public class MapObjectNether extends MapObject {
 		isNetherCoordinates = eIsNetherCoordinates;		
 	}
 	
+	@Override
 	public boolean isNetherCoordinates() {
 		return isNetherCoordinates;
 	}
 
+	@Override
 	public boolean isLocatedInNether() {
 		return true;
 	}	
