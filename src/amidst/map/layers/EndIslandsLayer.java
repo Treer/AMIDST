@@ -35,9 +35,19 @@ public class EndIslandsLayer extends ImageLayer {
 		
 		List<EndIsland> islands = fragment.getEndIslands();
 		
+		// the island belt is 64 chunks from the main island, and
+		// a fragment current shows 32 chunks, so because there aren't
+		// small islands immediately surrounding the main island, don't
+		// draw "rocky shores" if the fragment is near the main island.
+		int fragChunkCenterX = fragment.getChunkX() + (Fragment.SIZE_IN_CHUNKS >> 1);
+		int fragChunkCenterY = fragment.getChunkY() + (Fragment.SIZE_IN_CHUNKS >> 1);
+		boolean showRockyShores = (fragChunkCenterX * fragChunkCenterX + fragChunkCenterY * fragChunkCenterY) > 2048;
+				
 		int texX;
 		int texY;
 		int texSize = textures.getWidth();
+		int texOffset_rockyShores = texSize;
+		int texOffset_void        = texSize + texSize;
 				
 		for (int y = 0; y < size; y++) {
 			texY = y % texSize;
@@ -56,9 +66,13 @@ public class EndIslandsLayer extends ImageLayer {
 				int pixY = texY;
 
 				if (maxInfluence <= -100) {
-					pixY += texSize + texSize;
+					pixY += texOffset_void;
 				} else if (maxInfluence < 0) { // ToDo: tune this value. (adjusts where the islands end and the rocky shores start)					
-					pixY += texSize;
+					if (showRockyShores) {
+						pixY += texOffset_rockyShores;						
+					} else {
+						pixY += texOffset_void;						
+					}
 				}
 				dataCache[y * size + x] = textures.getRGB(texX,  pixY);
 			}
