@@ -4,6 +4,7 @@ package MoF;
 import amidst.Amidst;
 import amidst.Options;
 import amidst.gui.menu.AmidstMenu;
+import amidst.map.layers.EndCityLayer;
 import amidst.map.layers.OceanMonumentLayer;
 
 import java.awt.BorderLayout;
@@ -28,6 +29,7 @@ public class FinderWindow extends JFrame {
 		pane = getContentPane();
 		//UI Manager:
 		OceanMonumentLayer.InitializeUIOptions(Options.instance.showOceanMonuments);
+		EndCityLayer.InitializeUIOptions(Options.instance.showEndCities);
 		pane.setLayout(new BorderLayout());
 		new UpdateManager(this, true).start();
 		setJMenuBar(menuBar = new AmidstMenu(this));

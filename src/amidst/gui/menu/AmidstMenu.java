@@ -286,6 +286,7 @@ public class AmidstMenu extends JMenuBar {
 				add(new ExportOceanMaskMenuItem());
 				add(new ExportOverworldLocationsListMenuItem());
 				add(new ExportNetherLocationsListMenuItem());
+				add(new ExportEndLocationsListMenuItem());
 			}
 				
 			private class ExportOceanMaskMenuItem extends JMenuItem {
@@ -297,7 +298,7 @@ public class AmidstMenu extends JMenuBar {
 						public void actionPerformed(ActionEvent e) {
 							JFileChooser fc = new JFileChooser();
 							fc.setFileFilter(new PNGFileFilter());
-							fc.setSelectedFile(new File("seed" + (Options.instance.seedText == null ? String.format("%d", Options.instance.seed) : "_" + Options.instance.seedText) + ".png"));
+							fc.setSelectedFile(new File("seed_" + (Options.instance.seedText == null ? String.format("%d", Options.instance.seed) : "_" + Options.instance.seedText) + ".png"));
 							fc.setAcceptAllFileFilterUsed(false);
 							int returnVal = fc.showSaveDialog(window);
 							
@@ -320,7 +321,7 @@ public class AmidstMenu extends JMenuBar {
 						public void actionPerformed(ActionEvent e) {
 							JFileChooser fc = new JFileChooser();
 							fc.setFileFilter(new LocationsFileFilter());
-							fc.setSelectedFile(new File("seed" + (Options.instance.seedText == null ? String.format("%d", Options.instance.seed) : "_" + Options.instance.seedText) + ".txt"));
+							fc.setSelectedFile(new File("seed_" + (Options.instance.seedText == null ? String.format("%d", Options.instance.seed) : "_" + Options.instance.seedText) + ".txt"));
 							fc.setAcceptAllFileFilterUsed(false);
 							int returnVal = fc.showSaveDialog(window);
 							
@@ -345,7 +346,7 @@ public class AmidstMenu extends JMenuBar {
 						public void actionPerformed(ActionEvent e) {
 							JFileChooser fc = new JFileChooser();
 							fc.setFileFilter(new LocationsFileFilter());
-							fc.setSelectedFile(new File("nether" + (Options.instance.seedText == null ? String.format("%d", Options.instance.seed) : "_" + Options.instance.seedText) + ".txt"));
+							fc.setSelectedFile(new File("nether_" + (Options.instance.seedText == null ? String.format("%d", Options.instance.seed) : "_" + Options.instance.seedText) + ".txt"));
 							fc.setAcceptAllFileFilterUsed(false);
 							int returnVal = fc.showSaveDialog(window);
 							
@@ -355,6 +356,31 @@ public class AmidstMenu extends JMenuBar {
 									s += ".txt";
 								}
 								window.curProject.map.saveNetherLocationsToFile(new File(s));
+							}
+						}
+					});
+				}
+			}
+			
+			private class ExportEndLocationsListMenuItem extends JMenuItem {
+				private ExportEndLocationsListMenuItem() {
+					super("End Locations");
+					
+					addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							JFileChooser fc = new JFileChooser();
+							fc.setFileFilter(new LocationsFileFilter());
+							fc.setSelectedFile(new File("end_" + (Options.instance.seedText == null ? String.format("%d", Options.instance.seed) : "_" + Options.instance.seedText) + ".txt"));
+							fc.setAcceptAllFileFilterUsed(false);
+							int returnVal = fc.showSaveDialog(window);
+							
+							if (returnVal == JFileChooser.APPROVE_OPTION) {
+								String s = fc.getSelectedFile().toString();
+								if (!s.toLowerCase().endsWith(".txt") && !s.toLowerCase().endsWith(".csv")) {
+									s += ".txt";
+								}
+								window.curProject.map.saveEndLocationsToFile(new File(s));
 							}
 						}
 					});
@@ -460,45 +486,54 @@ public class AmidstMenu extends JMenuBar {
 					Options.instance.showSlimeChunks));
 				
 				add(new DisplayingCheckbox("Village Icons",
-						ResourceLoader.getImage("village.png"),
-						KeyEvent.VK_3,
-						Options.instance.showVillages));
-					
-				add(new DisplayingCheckbox("Ocean Monument Icons",
-						ResourceLoader.getImage("ocean_monument.png"),
-						KeyEvent.VK_4,
-						Options.instance.showOceanMonuments));
+					ResourceLoader.getImage("village.png"),
+					KeyEvent.VK_3,
+					Options.instance.showVillages));
 					
 				add(new DisplayingCheckbox("Temple/Witch Hut Icons",
 					ResourceLoader.getImage("desert.png"),
-					KeyEvent.VK_5,
+					KeyEvent.VK_4,
 					Options.instance.showTemples));
-				
+
+				add(new DisplayingCheckbox("Ocean Monument Icons",
+					ResourceLoader.getImage("ocean_monument.png"),
+					KeyEvent.VK_5,
+					Options.instance.showOceanMonuments));
+						
 				add(new DisplayingCheckbox("Stronghold Icons",
 					ResourceLoader.getImage("stronghold.png"),
 					KeyEvent.VK_6,
 					Options.instance.showStrongholds));
 				
+				add(new DisplayingCheckbox("Mineshaft Icons",
+					ResourceLoader.getImage("mineshaft.png"),
+					KeyEvent.VK_7,
+					Options.instance.showMineshafts));
+
+				add(new DisplayingCheckbox("Spawn Location Icon",
+					ResourceLoader.getImage("spawn.png"),
+					KeyEvent.VK_8,
+					Options.instance.showSpawn));
+
 				add(new DisplayingCheckbox("Player Icons",
 					ResourceLoader.getImage("player.png"),
-					KeyEvent.VK_7,
+					KeyEvent.VK_9,
 					Options.instance.showPlayers));
 				
 				add(new DisplayingCheckbox("Nether Fortress Icons",
 					ResourceLoader.getImage("nether_fortress.png"),
-					KeyEvent.VK_8,
+					KeyEvent.VK_0,
 					Options.instance.showNetherFortresses));
 				
-				add(new DisplayingCheckbox("Mineshaft Icons",
-					ResourceLoader.getImage("mineshaft.png"),
-					KeyEvent.VK_9,
-					Options.instance.showMineshafts));
-				
-				add(new DisplayingCheckbox("Spawn Location Icon",
-						ResourceLoader.getImage("spawn.png"),
-						KeyEvent.VK_0,
-						Options.instance.showSpawn));
-				
+				add(new DisplayingCheckbox("Possible End Cities",
+					ResourceLoader.getImage("end_city.png"),
+					KeyEvent.VK_C,
+					Options.instance.showEndCities));
+					
+				add(new DisplayingCheckbox("The End",
+					ResourceLoader.getImage("end_islands.png"),
+					KeyEvent.VK_I,
+					Options.instance.showEndChunks));
 			}
 			
 

@@ -19,6 +19,12 @@ public class BiomeLayer extends ImageLayer {
 		deselectAllBiomes();
 	}
 	
+	@Override
+	public boolean isVisible() {
+		// Potentially unnecessary optimisation: Don't draw the Overworld biome when the End is being drawn.
+		return !Options.instance.showEndChunks.get();
+	}
+	
 	public void selectAllBiomes() {
 		setSelectedAllBiomes(true);
 	}

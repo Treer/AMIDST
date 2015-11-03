@@ -5,22 +5,26 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 import amidst.Options;
 import amidst.logging.Log;
 import amidst.minecraft.MinecraftUtil;
 
 public class Fragment {
-	public static final int SIZE = 512, SIZE_SHIFT = 9, MAX_OBJECTS_PER_FRAGMENT = 32, BIOME_SIZE = SIZE >> 2;
+	public static final int SIZE = 512, SIZE_SHIFT = 9, MAX_OBJECTS_PER_FRAGMENT = 32, BIOME_SIZE = SIZE >> 2, SIZE_IN_CHUNKS = SIZE >> 4;
 	private static AffineTransform drawMatrix = new AffineTransform();
 	public int blockX, blockY;
 	
 	public short[] biomeData = new short[BIOME_SIZE * BIOME_SIZE];
+
+	/** Access this via getEndIslands() method */
+	private List<EndIsland> endIslands = null;
 	
 	private ImageLayer[] imageLayers;
 	private LiveLayer[] liveLayers;
 	private IconLayer[] iconLayers;
-	
+		
 	private Object loadLock = new Object();
 	
 	private BufferedImage[] images;
@@ -65,6 +69,7 @@ public class Fragment {
 				iconLayers[i].generateMapObjects(this);
 			alpha = Options.instance.mapFading.get()?0.0f:1.0f;
 			isLoaded = true;
+			endIslands = null;
 		}
 	}
 	
@@ -174,8 +179,20 @@ public class Fragment {
 	public int getFragmentX() {
 		return blockX >> SIZE_SHIFT;
 	}
-	public int getFragmentY() {
+	public int getFragmentY() {;
 		return blockY >> SIZE_SHIFT;
+	}
+	
+	public List<EndIsland> getEndIslands() {
+		if (endIslands == null) {
+			endIslands = EndIsland.findSurroundingIslands(
+				getChunkX(), 
+				getChunkY(), 
+				SIZE_IN_CHUNKS,
+				SIZE_IN_CHUNKS
+			);
+		}
+		return endIslands;
 	}
 	
 	public void setNext(Fragment frag) {

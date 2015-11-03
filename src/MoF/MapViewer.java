@@ -15,6 +15,8 @@ import amidst.map.MapObject;
 import amidst.map.MapObjectPlayer;
 import amidst.map.layers.BiomeIconLayer;
 import amidst.map.layers.BiomeLayer;
+import amidst.map.layers.EndCityLayer;
+import amidst.map.layers.EndIslandsLayer;
 import amidst.map.layers.GridLayer;
 import amidst.map.layers.MineshaftLayer;
 import amidst.map.layers.NetherFortressLayer;
@@ -159,7 +161,8 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 		return new FragmentManager(
 			new ImageLayer[] {
 				new BiomeLayer(),
-				new SlimeLayer()
+				new SlimeLayer(),
+				new EndIslandsLayer(),
 			},
 			new LiveLayer[] {
 				new GridLayer()
@@ -171,6 +174,7 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 				new TempleLayer(),
 				new SpawnLayer(),
 				new NetherFortressLayer(),
+				new EndCityLayer(),
 				new MineshaftLayer(),
 				
 				// Including BiomeIconLayers in the MapViewer is only useful for debug purposes,
@@ -398,6 +402,9 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 		exporter.saveNetherLocationsToFile(f);		
 	}
 	
+	public void saveEndLocationsToFile(File f) {
+		exporter.saveEndLocationsToFile(f);		
+	}
 	public void saveLocationsToFile(File f) {
 		exporter.saveOverworldLocationsToFile(f);		
 	}

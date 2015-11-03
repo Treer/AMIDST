@@ -23,9 +23,10 @@ public enum Options {
 	//permanent preferences
 	public final FilePrefModel jar;
 	public final BooleanPrefModel showSlimeChunks;
+	public final BooleanPrefModel showEndChunks;
 	public final BooleanPrefModel showGrid;
 	public final BooleanPrefModel showNetherFortresses;
-	public final BooleanPrefModel showTemples, showPlayers, showStrongholds, showVillages, showOceanMonuments, showMineshafts, showSpawn;
+	public final BooleanPrefModel showTemples, showEndCities, showPlayers, showStrongholds, showVillages, showOceanMonuments, showMineshafts, showSpawn;
 	public final BooleanPrefModel mapFlicking, mapFading, showFPS, showScale, showDebug;
 	public final BooleanPrefModel updateToUnstable;
 	public final BooleanPrefModel maxZoom;
@@ -64,6 +65,7 @@ public enum Options {
 		preferences = pref;
 		jar				     = new FilePrefModel(   pref, "jar", new File(Util.minecraftDirectory, "bin/minecraft.jar"));
 		showSlimeChunks	     = new BooleanPrefModel(pref, "slimeChunks",	 	 false);
+		showEndChunks	     = new BooleanPrefModel(pref, "endChunks",	         false);
 		showGrid			 = new BooleanPrefModel(pref, "grid",			 	 false);
 		showNetherFortresses = new BooleanPrefModel(pref, "netherFortressIcons", false);
 		showMineshafts		 = new BooleanPrefModel(pref, "mineshaftIcons",		 false);
@@ -73,6 +75,7 @@ public enum Options {
 		showStrongholds	     = new BooleanPrefModel(pref, "strongholdIcons",	 true);
 		showPlayers		     = new BooleanPrefModel(pref, "playerIcons",		 true);
 		showTemples		     = new BooleanPrefModel(pref, "templeIcons",		 true);
+		showEndCities	     = new BooleanPrefModel(pref, "endCityIcons",		 false);
 		showVillages		 = new BooleanPrefModel(pref, "villageIcons",		 true);
 		showOceanMonuments	 = new BooleanPrefModel(pref, "oceanMonumentIcons",	 true);
 		showSpawn			 = new BooleanPrefModel(pref, "spawnIcon",		     true);
