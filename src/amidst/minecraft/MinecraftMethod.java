@@ -79,8 +79,25 @@ public class MinecraftMethod {
 			e.printStackTrace();
 		} catch (NoSuchMethodException e) {
 			loadFailed = true;
-			Log.w(e, "Unable to find class method (" + mcClass.getName() + " / " + mcClass.getClassName() + ") (" + name + " / " + internalName +")");
-			e.printStackTrace();
+			
+			if (name == "initializeAllBiomeGenerators") {
+				// As long as "initializeAllBiomeGeneratorsWithParams" is found, it won't matter that
+				// "initializeAllBiomeGenerators" is missing. It's normal for "initializeAllBiomeGenerators"
+				// to be missing in modern versions of Minecraft (and vice versa in old versions), but making 
+				// the class-finding system aware of that would be a major overhaul, so until then I will 
+				// neuter the scary stacktrace message with a hack here.
+				Log.w(
+					e, 
+					"Unable to find class method (" + 
+					mcClass.getName() + " / " + mcClass.getClassName() + ") (" + name + " / " + internalName +
+					"), this is normal in modern minecraft .jars, and does not matter provided the method " + 
+					"initializeAllBiomeGeneratorsWithParams() is found."
+				);
+				
+			} else {			
+				Log.w(e, "Unable to find class method (" + mcClass.getName() + " / " + mcClass.getClassName() + ") (" + name + " / " + internalName +")");
+				e.printStackTrace();
+			}
 		}
 	}
 	public Object callStatic(Object... param) {

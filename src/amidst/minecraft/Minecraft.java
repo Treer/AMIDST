@@ -49,14 +49,28 @@ public class Minecraft {
 			(new ClassChecker() {
 				@Override
 				public void check(Minecraft m, ByteClass bClass) {
-					if (bClass.fields.length != 3)
+					
+					// look for a class with 3 fields
+					if (bClass.fields.length != 3) {
 						return;
-					int privateStatic = AccessFlags.PRIVATE | AccessFlags.STATIC;
-					for (int i = 0; i < 3; i++) {
-						if ((bClass.fields[i].accessFlags & privateStatic) != privateStatic)
-							return;
 					}
 					
+					// Either all of the fields are private-static (before 15w44b)
+					// or two are private static and one is public-static (the first field - PRINT_STREAM was made public some time between 15w33c and 15w44b)
+					int privateStatic = AccessFlags.PRIVATE | AccessFlags.STATIC;
+					int publicStatic  = AccessFlags.PUBLIC  | AccessFlags.STATIC;
+					
+					int privateStaticCount = 0;
+					int publicStaticCount = 0;
+					for (int i = 0; i < 3; i++) {
+						if ((bClass.fields[i].accessFlags & privateStatic) == privateStatic) privateStaticCount++;
+						if ((bClass.fields[i].accessFlags & publicStatic)  == publicStatic)  publicStaticCount++;
+					}
+					if (!(privateStaticCount == 3 || (privateStaticCount == 2 && publicStaticCount == 1))) {
+						return;
+					}
+					
+					// look for a class with no constructor, 6 methods that makes a call to "isDebugEnabled"
 					if ((bClass.constructorCount == 0) && (bClass.methodCount == 6) && (bClass.searchForUtf("isDebugEnabled"))) {
 						m.registerClass("BlockInit", bClass);
 						isComplete = true;
