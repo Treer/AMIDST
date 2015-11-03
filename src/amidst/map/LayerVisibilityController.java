@@ -38,9 +38,11 @@ public class LayerVisibilityController {
 		// to automatically include the visibility options for all the layers.
 		layerList.add(Options.instance.showGrid);
 		layerList.add(Options.instance.showSlimeChunks);
+		layerList.add(Options.instance.showEndChunks);
 		layerList.add(Options.instance.showVillages);
 		layerList.add(Options.instance.showOceanMonuments);
 		layerList.add(Options.instance.showTemples);
+		layerList.add(Options.instance.showEndCities);
 		layerList.add(Options.instance.showStrongholds);
 		layerList.add(Options.instance.showPlayers);
 		layerList.add(Options.instance.showNetherFortresses);
