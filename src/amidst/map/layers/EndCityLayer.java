@@ -31,6 +31,12 @@ public class EndCityLayer extends IconLayer {
 	
 	private Random random = new Random();
 	
+	enum ChunkProbability {
+		None,
+		Possible,
+		Likely				
+	}
+			
 	public EndCityLayer() {
 	}
 	
@@ -78,8 +84,16 @@ public class EndCityLayer extends IconLayer {
 				for (int y = 0; y < size; y++) {
 					int chunkX = x + frag.getChunkX();
 					int chunkY = y + frag.getChunkY();
-					if (checkChunk(frag, chunkX, chunkY)) {
-						frag.addObject(new MapObjectEndCity((x << 4) + 8, (y << 4) + 8).setParent(this));
+					
+					ChunkProbability cityProbability = checkChunk(frag, chunkX, chunkY);
+					if (cityProbability != ChunkProbability.None) {
+						frag.addObject(
+							new MapObjectEndCity(
+								(x << 4) + 8, 
+								(y << 4) + 8,
+								cityProbability == ChunkProbability.Likely
+							).setParent(this)
+						);
 					}
 				}
 			}
@@ -94,9 +108,9 @@ public class EndCityLayer extends IconLayer {
     }
 	
 
-	public boolean checkChunk(Fragment frag, int chunkX, int chunkY) {
+	public ChunkProbability checkChunk(Fragment frag, int chunkX, int chunkY) {
 		
-		boolean result = false;
+		ChunkProbability result = ChunkProbability.None;
 		
 		byte maxDistanceBetweenScatteredFeatures = 20;
 		byte minDistanceBetweenScatteredFeatures = 11;
@@ -119,32 +133,45 @@ public class EndCityLayer extends IconLayer {
 		b += (random.nextInt(distanceRange) + random.nextInt(distanceRange)) / 2;
 		
 		if ((chunkX == a) && (chunkY == b)) {
-
-			result = ((chunkX * chunkX + chunkY * chunkY) > 4096) && isIslandCore(frag, chunkX, chunkY);
+			if ((chunkX * chunkX + chunkY * chunkY) > 4096) {
+				result = isIslandCore(frag, chunkX, chunkY);
+			}
 		}
 		return result;
 	}
 	
-	protected boolean isIslandCore(Fragment frag, int chunkX, int chunkZ) {
+	protected ChunkProbability isIslandCore(Fragment frag, int chunkX, int chunkZ) {
 		
 		// requiredInfluence is a value between 0 and 80 that I'm finding by
 		// trial and error. If the island influence is 0 or higher then an 
 		// End City can spawn, but they don't spawn unless all of the ground
 		// under then is at a higher value than 60. Since we don't want to generate
 		// the land to discover the high areas, I'm using the island influence
-		// as proxy for how high the land will be.
+		// as proxy for how high the land might be.
 		float requiredInfluence = 59;
 		
 		List<EndIsland> islands = frag.getEndIslands();
 		for(EndIsland island: islands) {
 			
-			if (island.influenceAt((chunkX << 4) + 7, (chunkZ << 4) + 7) > requiredInfluence) {
-				// testing that the center of the chunk for requiredInfluence is
-				// a higher bar to pass than  testing if (island.influenceAtChunk(chunkX, chunkZ) > 100) 
-				// so I'm skipping the test that Minecraft performs.
-				return true;				
+			float influence = island.influenceAtChunk(chunkX, chunkZ);
+			
+			if (influence >= 0.0) {
+				// The influence is greater or equal to zero so Minecraft WILL attempt to
+				// build an End City, however if the ground at any of the corners of the end 
+				// city is below height 60 then the End City will be aborted.
+				
+				// TODO: Use Amidst's ability to hook into the minecraft .jar file to get Minecraft
+				// to build just this single chunk so we can tell for certain whether an End City
+				// builds here. (If that's feasible)
+				
+				// In the meantime, fall back on the requiredInfluence heuristic				
+				if (influence > requiredInfluence) {
+					return ChunkProbability.Likely;				
+				} else {
+					return ChunkProbability.Possible;									
+				}
 			}
 		}		
-		return false;
+		return ChunkProbability.None;
 	}
 }

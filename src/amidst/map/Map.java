@@ -7,8 +7,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import amidst.Options;
 import amidst.logging.Log;
 import amidst.map.layers.BiomeLayer;
+import amidst.minecraft.Biome;
 
 public class Map {
 	//public static Map instance = null;
@@ -433,6 +435,12 @@ public class Map {
 	}
 
 	public String getBiomeAliasAt(Point point) {
+		
+		if (Options.instance.showEndChunks.get()) {
+			// The map is displaying The End - it's all one biome
+			return Options.instance.biomeColorProfile.getAliasForId(Biome.sky.index);
+		}
+		
 		Fragment frag = startNode;
 		while (frag.hasNext) {
 			frag = frag.nextFragment;

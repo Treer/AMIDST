@@ -49,7 +49,9 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.TexturePaint;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -87,7 +89,11 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 		dropShadowBottom      = ResourceLoader.getImage("dropshadow/inner_bottom.png"),
 		dropShadowTop         = ResourceLoader.getImage("dropshadow/inner_top.png"),
 		dropShadowLeft        = ResourceLoader.getImage("dropshadow/inner_left.png"),
-		dropShadowRight       = ResourceLoader.getImage("dropshadow/inner_right.png");
+		dropShadowRight       = ResourceLoader.getImage("dropshadow/inner_right.png"),
+		endVoidTexture        = ResourceLoader.getImage("void.png");
+	private static TexturePaint 
+		endVoidTexturePaint   = new TexturePaint(endVoidTexture, new Rectangle(0, 0, endVoidTexture.getWidth(), endVoidTexture.getHeight()));
+	
 	
 	private Project proj;
 	
@@ -201,7 +207,12 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 		float time = Math.min(Math.max(0, currentTime - lastTime), 100) / 1000.0f;
 		lastTime = currentTime;
 		
-		g2d.setColor(Color.black);
+		if (Options.instance.showEndChunks.get()) {
+			// Draw the End Sky
+			g2d.setPaint(endVoidTexturePaint);			
+		} else {
+			g2d.setColor(Color.black);			
+		}
 		g2d.fillRect(0, 0, this.getWidth(), this.getHeight());
 
 		if (zoomTicksRemaining-- > 0) {

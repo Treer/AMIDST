@@ -39,7 +39,8 @@ public class Simplex2dNoise
         return vertice[0] * x + vertice[1] * y;
     }
     
-    // TODO: Rewrite this
+    // TODO: Rewrite this abomination, or use the power of Amidst to hook into the
+    // Minecraft .jar file and call Majang's Simplex2d class instead.
     public double a(final double a1, final double a2) {
         final double v2 = (a1 + a2) * cSimplexSkewConstantFor2d;
         final int v3 = RoundTowardZero(/*EL:68*/a1 + v2);

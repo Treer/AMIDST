@@ -32,49 +32,71 @@ public class EndIslandsLayer extends ImageLayer {
 	@Override
 	public void drawToCache(Fragment fragment) {
 		int[] dataCache = Fragment.getIntArray();
+			
+		float influenceFadeStart   =  0;
+		float influenceFadeFinish  = -8; // must be lower than influenceFadeStart, so that islands fades out as influence declines
+		float fadeRange = influenceFadeStart - influenceFadeFinish;
 		
+		int texelX;
+		int texelY;
+		int textureWidth = textures.getWidth();
+		int textureHeight = textures.getHeight() >> 1;
+		int textureOffset_rockyShores = textureHeight;
+		
+		boolean showRockyShores;
+		int chunkX, chunkY, blockX, blockY, fragmentChunkX, fragmentChunkY, fragmentBlockX, fragmentBlockY;
+		fragmentChunkX = fragment.getChunkX();
+		fragmentChunkY = fragment.getChunkY();
+		fragmentBlockX = fragment.getBlockX();
+		fragmentBlockY = fragment.getBlockY();
 		List<EndIsland> islands = fragment.getEndIslands();
-		
-		// the island belt is 64 chunks from the main island, and
-		// a fragment current shows 32 chunks, so because there aren't
-		// small islands immediately surrounding the main island, don't
-		// draw "rocky shores" if the fragment is near the main island.
-		int fragChunkCenterX = fragment.getChunkX() + (Fragment.SIZE_IN_CHUNKS >> 1);
-		int fragChunkCenterY = fragment.getChunkY() + (Fragment.SIZE_IN_CHUNKS >> 1);
-		boolean showRockyShores = (fragChunkCenterX * fragChunkCenterX + fragChunkCenterY * fragChunkCenterY) > 2048;
-				
-		int texX;
-		int texY;
-		int texSize = textures.getWidth();
-		int texOffset_rockyShores = texSize;
-		int texOffset_void        = texSize + texSize;
-				
+
 		for (int y = 0; y < size; y++) {
-			texY = y % texSize;
+			
+			texelY = y % textureHeight;
+			chunkY = fragmentChunkY + (y >> 2); // Shift y right by 2 instead of 4 because Layer size is 4 blocks per pixel
+			blockY = fragmentBlockY + (y << 2); // Shift y left  by 2 instead of 4 because Layer size is 4 blocks per pixel
+					
 			for (int x = 0; x < size; x++) {
+
+				texelX = x % textureWidth;
+				chunkX = fragmentChunkX + (x >> 2); // Shift x right by 2 instead of 4 because Layer size is 4 blocks per pixel
+				blockX = fragmentBlockX + (x << 2); // Shift x left  by 2 instead of 4 because Layer size is 4 blocks per pixel
 				
-				int blockX = (fragment.getChunkX() << 4) + (x << 2); // Shift left by 2 because Layer size is 4 blocks per pixel
-				int blockY = (fragment.getChunkY() << 4) + (y << 2); // Shift left by 2 because Layer size is 4 blocks per pixel
+				// Determine if the chunk may contain miniature islands
+				showRockyShores = (chunkX * chunkX + chunkY * chunkY) > 4096;
 				
+				// Determine whether this 
 				float maxInfluence = -100.0f;
 				for(EndIsland island: islands) {
 					float influence = island.influenceAt(blockX, blockY);
 					if (influence > maxInfluence) maxInfluence = influence;
 				}		
 
-				texX = x % texSize;
-				int pixY = texY;
+				int pixel = 0x00000000; // transparent black - shows as void
 
-				if (maxInfluence <= -100) {
-					pixY += texOffset_void;
-				} else if (maxInfluence < 0) { // ToDo: tune this value. (adjusts where the islands end and the rocky shores start)					
+				if (maxInfluence >= influenceFadeStart) {
+					// Draw endstone island
+					pixel = textures.getRGB(texelX,  texelY);					
+				} else {
+
 					if (showRockyShores) {
-						pixY += texOffset_rockyShores;						
-					} else {
-						pixY += texOffset_void;						
+						pixel = textures.getRGB(texelX,  texelY + textureOffset_rockyShores);
+					}
+
+					if (maxInfluence > influenceFadeFinish) {
+						// Fade out the endstone - this is the edge of an island
+						int pixelAlpha = pixel >>> 24;
+						int fadingIslandAlpha = 255 - (int)(255 * (influenceFadeStart - maxInfluence) / fadeRange);
+						
+						if (fadingIslandAlpha > pixelAlpha) {
+							// favor the island pixel instead of the rocky shores pixel
+							// (Should look perfect without needing to blend, because rocky shore is still endstone texture)
+							pixel = (textures.getRGB(texelX,  texelY) & 0x00FFFFFF) | (fadingIslandAlpha << 24);
+						}
 					}
 				}
-				dataCache[y * size + x] = textures.getRGB(texX,  pixY);
+				dataCache[y * size + x] = pixel;
 			}
 		}
 		

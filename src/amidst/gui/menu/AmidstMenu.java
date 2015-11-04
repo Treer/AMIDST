@@ -525,7 +525,7 @@ public class AmidstMenu extends JMenuBar {
 					KeyEvent.VK_0,
 					Options.instance.showNetherFortresses));
 				
-				add(new DisplayingCheckbox("Possible End Cities",
+				add(new DisplayingCheckbox("End Cities",
 					ResourceLoader.getImage("end_city.png"),
 					KeyEvent.VK_C,
 					Options.instance.showEndCities));
