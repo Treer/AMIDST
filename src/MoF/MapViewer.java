@@ -393,6 +393,11 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 		BufferedImage image = new BufferedImage(worldMap.width, worldMap.height, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g2d = image.createGraphics();
 		
+		if (Options.instance.showEndChunks.get()) {
+			// Draw the End Sky
+			g2d.setPaint(endVoidTexturePaint);
+			g2d.fillRect(0, 0, this.getWidth(), this.getHeight());
+		}
 		worldMap.draw(g2d, 0);
 
 		for (Widget widget : widgets)
