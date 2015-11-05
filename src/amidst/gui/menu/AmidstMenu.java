@@ -490,7 +490,7 @@ public class AmidstMenu extends JMenuBar {
 					KeyEvent.VK_3,
 					Options.instance.showVillages));
 					
-				add(new DisplayingCheckbox("Temple/Witch Hut Icons",
+				add(new DisplayingCheckbox("Temple/Igloo/Witch Hut Icons",
 					ResourceLoader.getImage("desert.png"),
 					KeyEvent.VK_4,
 					Options.instance.showTemples));
@@ -525,14 +525,14 @@ public class AmidstMenu extends JMenuBar {
 					KeyEvent.VK_0,
 					Options.instance.showNetherFortresses));
 				
-				add(new DisplayingCheckbox("End Cities",
+				add(new DisplayingCheckbox("End City Icons",
 					ResourceLoader.getImage("end_city.png"),
 					KeyEvent.VK_C,
 					Options.instance.showEndCities));
 					
 				add(new DisplayingCheckbox("The End",
 					ResourceLoader.getImage("end_islands.png"),
-					KeyEvent.VK_I,
+					KeyEvent.VK_E,
 					Options.instance.showEndChunks));
 			}
 			

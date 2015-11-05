@@ -145,10 +145,10 @@ public class EndCityLayer extends IconLayer {
 		// requiredInfluence is a value between 0 and 80 that I'm finding by
 		// trial and error. If the island influence is 0 or higher then an 
 		// End City can spawn, but they don't spawn unless all of the ground
-		// under then is at a higher value than 60. Since we don't want to generate
+		// under then is at a higher y value than 60. Since we don't want to generate
 		// the land to discover the high areas, I'm using the island influence
 		// as proxy for how high the land might be.
-		float requiredInfluence = 59;
+		float requiredInfluence = 60;
 		
 		List<EndIsland> islands = frag.getEndIslands();
 		for(EndIsland island: islands) {
@@ -165,7 +165,7 @@ public class EndCityLayer extends IconLayer {
 				// builds here. (If that's feasible)
 				
 				// In the meantime, fall back on the requiredInfluence heuristic				
-				if (influence > requiredInfluence) {
+				if (influence >= requiredInfluence) {
 					return ChunkProbability.Likely;				
 				} else {
 					return ChunkProbability.Possible;									
