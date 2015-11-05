@@ -9,6 +9,7 @@ import amidst.logging.Log;
 import amidst.map.Fragment;
 import amidst.map.IconLayer;
 import amidst.map.MapObjectDesertTemple;
+import amidst.map.MapObjectIgloo;
 import amidst.map.MapObjectJungleTemple;
 import amidst.map.MapObjectWitchHut;
 import amidst.minecraft.Biome;
@@ -40,10 +41,12 @@ public class TempleLayer extends IconLayer {
 					
 					if (chunkBiome == Biome.swampland) {
 						frag.addObject(new MapObjectWitchHut((x << 4) + 8, (y << 4) + 8).setParent(this));
-					} else if (chunkBiome.name.contains("Jungle")) {
+					} else if (chunkBiome == Biome.jungle || chunkBiome == Biome.jungleHills) {
 						frag.addObject(new MapObjectJungleTemple((x << 4) + 8, (y << 4) + 8).setParent(this));
-					} else if (chunkBiome.name.contains("Desert")) {					
+					} else if (chunkBiome == Biome.desert || chunkBiome == Biome.desertHills) {					
 						frag.addObject(new MapObjectDesertTemple((x << 4) + 8, (y << 4) + 8).setParent(this));
+					} else if (chunkBiome == Biome.icePlains || chunkBiome == Biome.coldTaiga) {					
+						frag.addObject(new MapObjectIgloo((x << 4) + 8, (y << 4) + 8).setParent(this));
 					} else {			
 						Log.e("No known structure for this biome type. checkChunk() may be faulting.");
 					}
@@ -55,7 +58,17 @@ public class TempleLayer extends IconLayer {
 	public List<Biome> getValidBiomes() {
 		Biome[] validBiomes;
 		
-		if (MinecraftUtil.getVersion().isAtLeast(VersionInfo.V1_4_2)) {
+		if (MinecraftUtil.getVersion().isAtLeast(VersionInfo.V15w43c)) {
+			validBiomes = new Biome[] {
+				Biome.desert,
+				Biome.desertHills,
+				Biome.jungle,
+				Biome.jungleHills,
+				Biome.swampland,
+				Biome.icePlains,
+				Biome.coldTaiga,
+			};
+		} else if (MinecraftUtil.getVersion().isAtLeast(VersionInfo.V1_4_2)) {
 			validBiomes = new Biome[] {
 				Biome.desert,
 				Biome.desertHills,
