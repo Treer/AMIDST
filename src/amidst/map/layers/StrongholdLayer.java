@@ -59,7 +59,10 @@ public class StrongholdLayer extends IconLayer {
 		Biome.jungleHills
 	};
 	
-	private MapObjectStronghold[] strongholds = new MapObjectStronghold[3];
+	double option_distance_inChunks = 32;
+	int option_structuresOnFirstRing = 3;
+	int option_totalStructureCount = 128;	
+	private MapObjectStronghold[] _strongholds = null;
 	
 	public StrongholdLayer() {
 		instance = this;
@@ -89,6 +92,13 @@ public class StrongholdLayer extends IconLayer {
 		Random random = new Random();
 		random.setSeed(Options.instance.seed);
 		
+		if (MinecraftUtil.getVersion().isAtLeast(VersionInfo.V15w43c)) {
+			// Number of strongholds was increased to 128
+			option_totalStructureCount = 128;
+		} else {
+			option_totalStructureCount = 3;
+		}
+		_strongholds = new MapObjectStronghold[option_totalStructureCount];
 		
 		// TODO: Replace this system!
 		Biome[] validBiomes = biomesDefault;
@@ -109,27 +119,36 @@ public class StrongholdLayer extends IconLayer {
 				}
 			}
 		}
-		
+				
+		int ring = 1;
+		int structuresPerRing = option_structuresOnFirstRing;
+		int currentRingStructureCount = 0;
 		double angle = random.nextDouble() * 3.141592653589793D * 2.0D;
-		for (int i = 0; i < 3; i++) {
-			double distance = (1.25D + random.nextDouble()) * 32.0D;
+		for (int i = 0; i < option_totalStructureCount; i++) {
+			double distance = ((1.25D * ring) + random.nextDouble()) * (option_distance_inChunks * ring);
 			int x = (int)Math.round(Math.cos(angle) * distance);
 			int y = (int)Math.round(Math.sin(angle) * distance);
-
-
 			
 			Point strongholdLocation = MinecraftUtil.findValidLocation((x << 4) + 8, (y << 4) + 8, 112, biomeArrayList, random);
 			if (strongholdLocation != null) {
 				x = strongholdLocation.x >> 4;
 				y = strongholdLocation.y >> 4;
 			}
-			strongholds[i] = new MapObjectStronghold((x << 4), (y << 4));
-			angle += 6.283185307179586D / 3.0D;
+			_strongholds[i] = new MapObjectStronghold((x << 4), (y << 4));
+			angle += 6.283185307179586D * ring / structuresPerRing;
+			
+			if (++currentRingStructureCount == structuresPerRing) {
+				ring++;
+				currentRingStructureCount = 0;
+				structuresPerRing += structuresPerRing + random.nextInt(structuresPerRing);				
+			}
 		}
 	}
 
 	public boolean checkChunk(int chunkX, int chunkY) {
-		for (int i = 0; i < 3; i++) {
+		
+		MapObjectStronghold[] strongholds = getStrongholds();
+		for (int i = 0; i < strongholds.length; i++) {
 			int strongholdChunkX = strongholds[i].x >> 4;
 			int strongholdChunkY = strongholds[i].y >> 4;
 			if ((strongholdChunkX == chunkX) && (strongholdChunkY == chunkY))
@@ -139,7 +158,8 @@ public class StrongholdLayer extends IconLayer {
 	}
 	
 	public MapObjectStronghold[] getStrongholds() {
-		return strongholds;
+		if (_strongholds == null) findStrongholds();
+		return _strongholds;
 	}
 	
 	@Override
