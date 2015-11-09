@@ -190,9 +190,10 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 				// to remove the excess mapObjects created for each fragment before they were
 				// condensed into one.
 				//
-				// new BiomeIconLayer(MapMarkers.MUSHROOM_ISLAND),
-				// new BiomeIconLayer(MapMarkers.ICE_PLAINS_SPIKES),
-				// new BiomeIconLayer(MapMarkers.FLOWER_FOREST),
+				// new BiomeIconLayer(MapMarkers.RAREBIOME_MUSHROOM_ISLAND),
+				// new BiomeIconLayer(MapMarkers.RAREBIOME_ICE_PLAINS_SPIKES),
+				// new BiomeIconLayer(MapMarkers.RAREBIOME_FLOWER_FOREST),
+				// new BiomeIconLayer(MapMarkers.RAREBIOME_MESA),
 				
 				playerLayer = new PlayerLayer()
 			}

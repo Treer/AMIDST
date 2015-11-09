@@ -138,21 +138,26 @@ public class BiomeIconLayer extends IconLayer {
 		VersionInfo minimumVersion;
 		
 		switch(biomeType) {		
-			case MUSHROOM_ISLAND:
+			case RAREBIOME_MUSHROOM_ISLAND:
 				minimumVersion = VersionInfo.V1_0;
 				desiredBiomes = new Biome[] { Biome.mushroomIsland, Biome.mushroomIslandM, Biome.mushroomIslandShore, Biome.mushroomIslandShoreM };
 				break;
 				
-			case ICE_PLAINS_SPIKES:
+			case RAREBIOME_ICE_PLAINS_SPIKES:
 				minimumVersion = VersionInfo.V1_7_2;
 				desiredBiomes = new Biome[] { Biome.icePlainsSpikes } ;
 				break;
 				
-			case FLOWER_FOREST:
+			case RAREBIOME_FLOWER_FOREST:
 				minimumVersion = VersionInfo.V1_7_2;
 				desiredBiomes = new Biome[] { Biome.flowerForest } ;
 				break;
 				
+			case RAREBIOME_MESA:
+				minimumVersion = VersionInfo.V1_7_2;
+				desiredBiomes = new Biome[] { Biome.mesa, Biome.mesaBryce } ;
+				break;
+
 			default:
 				Log.crash("BiomeIconLayer created with unsupported biome");
 				minimumVersion = VersionInfo.unknown;

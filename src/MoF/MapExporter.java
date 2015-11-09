@@ -223,9 +223,10 @@ public class MapExporter implements FragmentManagerListener {
 			locationTable.get(MapMarkers.STRONGHOLD).caption = "\"~Stronghold~\"";
 			locationTable.get(MapMarkers.STRONGHOLD).url = "http://minecraft.gamepedia.com/Stronghold";
 
-			locationTable.put(MapMarkers.ICE_PLAINS_SPIKES, new LocationTypeInfo("IcePlainsSpikes", true));				
-			locationTable.put(MapMarkers.MUSHROOM_ISLAND,   new LocationTypeInfo("MushroomIsland",  true));				
-			locationTable.put(MapMarkers.FLOWER_FOREST,     new LocationTypeInfo("FlowerForest",    false));				
+			locationTable.put(MapMarkers.RAREBIOME_ICE_PLAINS_SPIKES, new LocationTypeInfo("IcePlainsSpikes", true));				
+			locationTable.put(MapMarkers.RAREBIOME_MUSHROOM_ISLAND,   new LocationTypeInfo("MushroomIsland",  true));				
+			locationTable.put(MapMarkers.RAREBIOME_FLOWER_FOREST,     new LocationTypeInfo("FlowerForest",    false));				
+			locationTable.put(MapMarkers.RAREBIOME_MESA,              new LocationTypeInfo("Mesa",            true));				
 			
 			locationTable.put(MapMarkers.SPAWN,             new LocationTypeInfo("Spawn",           false));
 			locationTable.put(MapMarkers.JUNGLE,            new LocationTypeInfo("JungleTemple",    false));	
@@ -297,7 +298,7 @@ public class MapExporter implements FragmentManagerListener {
 					if (info != null && info.isSpoilerLocation) {
 						writer.println(info.LocationFileEntry(location, exportMap));
 						
-						if (location.type == MapMarkers.MUSHROOM_ISLAND) {
+						if (location.type == MapMarkers.RAREBIOME_MUSHROOM_ISLAND) {
 							// Include an island overlay on top of the mushroom location
 							LocationTypeInfo overlay = new LocationTypeInfo("IslandOverlay", true);
 							writer.println(overlay.LocationFileEntry(location, exportMap));							
@@ -453,9 +454,10 @@ public class MapExporter implements FragmentManagerListener {
 			new SpawnLayer(),
 			new NetherFortressLayer(),
 			new EndCityLayer(),
-			new BiomeIconLayer(MapMarkers.MUSHROOM_ISLAND, false),
-			new BiomeIconLayer(MapMarkers.ICE_PLAINS_SPIKES, false),
-			new BiomeIconLayer(MapMarkers.FLOWER_FOREST, false)
+			new BiomeIconLayer(MapMarkers.RAREBIOME_MUSHROOM_ISLAND, false),
+			new BiomeIconLayer(MapMarkers.RAREBIOME_ICE_PLAINS_SPIKES, false),
+			new BiomeIconLayer(MapMarkers.RAREBIOME_FLOWER_FOREST, false),
+			new BiomeIconLayer(MapMarkers.RAREBIOME_MESA, false)
 		};		
 		
 		fragmentManager = new FragmentManager(

@@ -438,7 +438,7 @@ public class Map {
 		
 		if (Options.instance.showEndChunks.get()) {
 			// The map is displaying The End - it's all one biome
-			return Options.instance.biomeColorProfile.getAliasForId(Biome.sky.index);
+			return Options.instance.biomeColorProfile.getAliasForId(Biome.theEnd.index);
 		}
 		
 		Fragment frag = startNode;

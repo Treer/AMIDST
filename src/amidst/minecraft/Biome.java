@@ -30,7 +30,7 @@ public class Biome {
 	public static final Biome swampland			   = new Biome("Swampland",			     6, Util.makeColor(7, 249, 178),	 typeM);
 	public static final Biome river				   = new Biome("River",				     7, Util.makeColor(0, 0, 255),	     typeB);
 	public static final Biome hell				   = new Biome("Hell",				     8, Util.makeColor(255, 0, 0),	     typeA);
-	public static final Biome sky				   = new Biome("Sky",					 9, Util.makeColor(128, 128, 255),   typeA);
+	public static final Biome theEnd			   = new Biome("The End",				 9, Util.makeColor(128, 128, 255),   typeA);
 	public static final Biome frozenOcean		   = new Biome("Frozen Ocean",		    10, Util.makeColor(144, 144, 160),   typeC);
 	public static final Biome frozenRiver		   = new Biome("Frozen River",		    11, Util.makeColor(160, 160, 255),   typeB);
 	public static final Biome icePlains			   = new Biome("Ice Plains",			12, Util.makeColor(255, 255, 255),   typeE);
