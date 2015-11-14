@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import MoF.MapViewer;
 import amidst.Options;
 import amidst.map.FragmentManager;
+import amidst.map.Map;
 
 public class DebugWidget extends PanelWidget {
 	public DebugWidget(MapViewer mapViewer) {
@@ -16,6 +17,8 @@ public class DebugWidget extends PanelWidget {
 	@Override
 	public void draw(Graphics2D g2d, float time) {
 		FragmentManager fragmentManager = mapViewer.getFragmentManager();
+		Map map = mapViewer.getMap();
+		
 		ArrayList<String> panelText  = new ArrayList<String>();
 		panelText.add("Fragment Manager:");
 		panelText.add("Pool Size: " + fragmentManager.getCacheSize());

@@ -3,6 +3,7 @@ package amidst.map.widget;
 import java.awt.Graphics2D;
 import java.awt.Point;
 
+import amidst.map.Map;
 import MoF.MapViewer;
 
 public class CursorInformationWidget extends PanelWidget {
@@ -17,7 +18,8 @@ public class CursorInformationWidget extends PanelWidget {
 	@Override
 	public void draw(Graphics2D g2d, float time) {
 		Point mouseLocation = null;
-		if ((mouseLocation = mapViewer.getMousePosition()) != null) {
+		if ((mouseLocation = mapViewer.getMousePosition()) != null) {			
+			Map map = mapViewer.getMap();
 			mouseLocation = map.screenToLocal(mouseLocation);
 			String biomeName = map.getBiomeAliasAt(mouseLocation);
 			message = biomeName + " [ " + mouseLocation.x + ", " + mouseLocation.y + " ]";

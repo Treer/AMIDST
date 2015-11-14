@@ -7,14 +7,12 @@ import amidst.map.Map;
 
 public class Widget {
 	protected MapViewer mapViewer;
-	protected Map map;
 	
 	protected int x, y, width, height;
 	protected boolean visible = true;
 	
 	public Widget(MapViewer mapViewer) {
 		this.mapViewer = mapViewer;
-		this.map = mapViewer.getMap();
 	}
 	
 	public void draw(Graphics2D g2d, float time) {

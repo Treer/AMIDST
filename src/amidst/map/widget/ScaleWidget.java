@@ -21,7 +21,7 @@ public class ScaleWidget extends PanelWidget {
 	public void draw(Graphics2D g2d, float time) {
 		
 		int scaleBlocks = scaleLength_blocks();
-		int scaleWidth_px = (int)(scaleBlocks * map.getZoom());
+		int scaleWidth_px = (int)(scaleBlocks * mapViewer.getMap().getZoom());
 		
 		String message = scaleBlocks + " blocks";		
 		
@@ -49,7 +49,7 @@ public class ScaleWidget extends PanelWidget {
 	
 	private int scaleLength_blocks() {
 		
-		double scale = map.getZoom();
+		double scale = mapViewer.getMap().getZoom();
 		
 		int result = 1000;
 		if(result * scale > cScaleLengthMax_px) {

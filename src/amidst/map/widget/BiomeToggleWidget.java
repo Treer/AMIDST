@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import amidst.logging.Log;
 import amidst.map.FragmentManager;
 import amidst.map.ImageLayer;
+import amidst.map.Map;
 import amidst.map.layers.BiomeLayer;
 import amidst.resources.ResourceLoader;
 import MoF.MapViewer;
@@ -38,7 +39,7 @@ public class BiomeToggleWidget extends PanelWidget {
 		(new Thread(new Runnable() {
 			@Override
 			public void run() {
-				map.repaintImageLayer(getBiomeLayer().getLayerId());
+				mapViewer.getMap().repaintImageLayer(getBiomeLayer().getLayerId());
 			}
 		})).start();
 		return true;

@@ -8,6 +8,7 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 
 import amidst.logging.Log;
+import amidst.map.Map;
 import amidst.map.layers.BiomeLayer;
 import amidst.minecraft.Biome;
 import MoF.MapViewer;
@@ -196,7 +197,7 @@ public class BiomeWidget extends PanelWidget {
 			(new Thread(new Runnable() {
 				@Override
 				public void run() {
-					map.repaintImageLayer(getBiomeLayer().getLayerId());
+					mapViewer.getMap().repaintImageLayer(getBiomeLayer().getLayerId());
 				}
 			})).start();
 		}
@@ -211,7 +212,6 @@ public class BiomeWidget extends PanelWidget {
 	
 	private void setMapViewer(MapViewer mapViewer) {
 		this.mapViewer = mapViewer;
-		this.map = mapViewer.getMap();
 		scrollbarGrabbed = false;
 	}
 	
