@@ -73,15 +73,22 @@ public class BiomeLayer extends ImageLayer {
 		fragment.setImageData(layerId, dataCache);
 	}
 	
+	/** returns -1 if fragment not loaded */
 	public static int getBiomeForFragment(Fragment frag, int blockX, int blockY) {
-		return frag.biomeData[(blockY >> 2) * Fragment.BIOME_SIZE + (blockX >> 2)];
+		if (frag.isLoaded) {
+			return frag.biomeData[(blockY >> 2) * Fragment.BIOME_SIZE + (blockX >> 2)];
+		} else {			
+			return -1;
+		}
 	}
 	
 	public static String getBiomeNameForFragment(Fragment frag, int blockX, int blockY) {
-		return Biome.biomes[getBiomeForFragment(frag, blockX, blockY)].name;
+		int biome = getBiomeForFragment(frag, blockX, blockY);
+		return biome >= 0 ? Biome.biomes[biome].name : "loading...";
 	}
 	public static String getBiomeAliasForFragment(Fragment frag, int blockX, int blockY) {
-		return Options.instance.biomeColorProfile.getAliasForId(getBiomeForFragment(frag, blockX, blockY));
+		int biome = getBiomeForFragment(frag, blockX, blockY);
+		return biome >= 0 ? Options.instance.biomeColorProfile.getAliasForId(biome) : "loading...";
 	}
 
 	public boolean isBiomeSelected(int id) {
