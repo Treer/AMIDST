@@ -7,6 +7,7 @@ import java.util.Random;
 import amidst.Options;
 import amidst.map.EndIsland;
 import amidst.map.Fragment;
+import amidst.map.Fragment_TheEnd;
 import amidst.map.IconLayer;
 import amidst.map.MapObjectEndCity;
 import amidst.map.MapObjectOceanMonument;
@@ -74,10 +75,13 @@ public class EndCityLayer extends IconLayer {
 		return Options.instance.showEndCities.get();		
 	}
 	
+	/** Only generates MapObjects when frag is a Fragment_TheEnd instance */
 	@Override
 	public void generateMapObjects(Fragment frag) {
 		
-		if (cAllVersionsCanShowEndCities || MinecraftVersionSupportsEndCities()) {
+		
+		
+		if ((frag instanceof Fragment_TheEnd) && (cAllVersionsCanShowEndCities || MinecraftVersionSupportsEndCities())) {
 		
 			int size = Fragment.SIZE >> 4;
 			for (int x = 0; x < size; x++) {
@@ -85,7 +89,7 @@ public class EndCityLayer extends IconLayer {
 					int chunkX = x + frag.getChunkX();
 					int chunkY = y + frag.getChunkY();
 					
-					ChunkProbability cityProbability = checkChunk(frag, chunkX, chunkY);
+					ChunkProbability cityProbability = checkChunk((Fragment_TheEnd)frag, chunkX, chunkY);
 					if (cityProbability != ChunkProbability.None) {
 						frag.addObject(
 							new MapObjectEndCity(
@@ -108,7 +112,7 @@ public class EndCityLayer extends IconLayer {
     }
 	
 
-	public ChunkProbability checkChunk(Fragment frag, int chunkX, int chunkY) {
+	private ChunkProbability checkChunk(Fragment_TheEnd frag, int chunkX, int chunkY) {
 		
 		ChunkProbability result = ChunkProbability.None;
 		
@@ -134,13 +138,13 @@ public class EndCityLayer extends IconLayer {
 		
 		if ((chunkX == a) && (chunkY == b)) {
 			if ((chunkX * chunkX + chunkY * chunkY) > 4096) {
-				result = isIslandCore(frag, chunkX, chunkY);
+				result = hasSuitableIslandFoundation(frag, chunkX, chunkY);
 			}
 		}
 		return result;
 	}
 	
-	protected ChunkProbability isIslandCore(Fragment frag, int chunkX, int chunkZ) {
+	protected ChunkProbability hasSuitableIslandFoundation(Fragment_TheEnd frag, int chunkX, int chunkZ) {
 		
 		// requiredInfluence is a value between 0 and 80 that I'm finding by
 		// trial and error. If the island influence is 0 or higher then an 

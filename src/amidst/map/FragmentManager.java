@@ -29,7 +29,12 @@ public class FragmentManager implements Runnable {
 	private IconLayer[] iconLayers;
 	private LiveLayer[] liveLayers;
 	
-	public FragmentManager(ImageLayer[] imageLayers, LiveLayer[] liveLayers, IconLayer[] iconLayers) {
+	public WorldDimensionType worldDimensionType;
+		
+	public FragmentManager(WorldDimensionType worldDimensionType, ImageLayer[] imageLayers, LiveLayer[] liveLayers, IconLayer[] iconLayers) {
+		
+		this.worldDimensionType = worldDimensionType;
+		
 		fragmentQueue = new ConcurrentLinkedQueue<Fragment>();
 		requestQueue = new ConcurrentLinkedQueue<Fragment>();
 		recycleQueue = new ConcurrentLinkedQueue<Fragment>();
@@ -40,7 +45,7 @@ public class FragmentManager implements Runnable {
 		for (int i = 0; i < imageLayers.length; i++)
 			imageLayers[i].setLayerId(i);
 		for (int i = 0; i < cacheSize; i++) {
-			fragmentCache[i] = new Fragment(imageLayers, liveLayers, iconLayers);
+			fragmentCache[i] = fragment_FactoryMethod(imageLayers, liveLayers, iconLayers);
 			fragmentQueue.offer(fragmentCache[i]);
 		}
 		this.imageLayers = imageLayers;
@@ -123,13 +128,22 @@ public class FragmentManager implements Runnable {
 			fragmentCache[i] = null;
 		}
 		for (int i = cacheSize; i < cacheSize << 1; i++) {
-			newFragments[i] = new Fragment(imageLayers, liveLayers, iconLayers);
+			newFragments[i] = fragment_FactoryMethod(imageLayers, liveLayers, iconLayers);
 			fragmentQueue.offer(newFragments[i]);
 		}
 		fragmentCache = newFragments;
 		Log.i("FragmentManager cache size increased from " + cacheSize + " to " + (cacheSize << 1));
 		cacheSize <<= 1;
 		System.gc();
+	}
+	
+	public Fragment fragment_FactoryMethod(ImageLayer[] imageLayers, LiveLayer[] liveLayers, IconLayer[] iconLayers) {
+		
+		if (worldDimensionType == WorldDimensionType.THEEND) {
+			return new Fragment_TheEnd(imageLayers, liveLayers, iconLayers);
+		} else {
+			return new Fragment_Overworld(imageLayers, liveLayers, iconLayers);		
+		}		
 	}
 	
 	public void repaintFragment(Fragment frag) {

@@ -13,6 +13,7 @@ import amidst.map.Map;
 import amidst.map.MapMarkers;
 import amidst.map.MapObject;
 import amidst.map.MapObjectPlayer;
+import amidst.map.WorldDimensionType;
 import amidst.map.layers.BiomeIconLayer;
 import amidst.map.layers.BiomeLayer;
 import amidst.map.layers.EndCityLayer;
@@ -120,18 +121,18 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 	
 	public void dispose() {
 		Log.debug("Disposing of map viewer.");
-		fragmentManager = null;
-		worldMap.dispose(); // this will also clean up the fragmentManager (passed to it during construction)
+		setWorldDimension(WorldDimensionType.NONE); // disposes worldmap and fragmentManager then doesn't create new ones.
 		exporter.dispose();
 		menu.removeAll();
 		proj = null;
 	}
 	
 	MapViewer(Project proj) {
-		fragmentManager = createFragmentManager(); // creating this on construction instead of leaving it to static construction ensure any stateful Layers get cleaned out, e.g. BiomeIconLayer (which should only ever be here for debug purposes anyway)
 
 		panSpeed = new Point2D.Double();
 		this.proj = proj;
+		
+		playerLayer = new PlayerLayer();		
 		if (playerLayer.isEnabled = proj.saveLoaded) {
 			playerLayer.setPlayers(proj.save);
 			for (MapObjectPlayer player : proj.save.getPlayers()) {
@@ -139,8 +140,7 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 			}
 		}
 		
-		worldMap = new Map(fragmentManager); //TODO: implement more layers
-		worldMap.setZoom(curZoom);
+		updateWorldDimension(); // creates worldMap and fragmentManager
 				
 		exporter = new MapExporter(Options.instance.seed);			
 		
@@ -162,42 +162,89 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 		textMetrics = getFontMetrics(textFont);
 	}
 
-	private FragmentManager createFragmentManager() {
+	/** invokes setWorldDimension() with the dimension currently selected in the options */ 
+	private void updateWorldDimension() {
+				
+		WorldDimensionType desiredDimension = Options.instance.showEndChunks.get() ? WorldDimensionType.THEEND : WorldDimensionType.OVERWORLD;
 		
-		return new FragmentManager(
-			new ImageLayer[] {
-				new BiomeLayer(),
-				new SlimeLayer(),
-				new EndIslandsLayer(),
-			},
-			new LiveLayer[] {
-				new GridLayer()
-			},
-			new IconLayer[] {
-				new VillageLayer(),
-				new OceanMonumentLayer(),
-				new StrongholdLayer(),
-				new TempleLayer(),
-				new SpawnLayer(),
-				new NetherFortressLayer(),
-				new EndCityLayer(),
-				new MineshaftLayer(),
-				
-				// Including BiomeIconLayers in the MapViewer is only useful for debug purposes,
-				// there's no need to display this data in the main window - the BiomeIconLayers 
-				// are for MapExporter.
-				// Plus you have to move the biome off screen then back onto the screen in order
-				// to remove the excess mapObjects created for each fragment before they were
-				// condensed into one.
-				//
-				// new BiomeIconLayer(MapMarkers.RAREBIOME_MUSHROOM_ISLAND),
-				// new BiomeIconLayer(MapMarkers.RAREBIOME_ICE_PLAINS_SPIKES),
-				// new BiomeIconLayer(MapMarkers.RAREBIOME_FLOWER_FOREST),
-				// new BiomeIconLayer(MapMarkers.RAREBIOME_MESA),
-				
-				playerLayer = new PlayerLayer()
-			}
-		);
+		if (worldMap == null || worldMap.getWorldDimension() != desiredDimension) {
+			setWorldDimension(desiredDimension);			
+		}		
+	}
+	
+	public void setWorldDimension(WorldDimensionType mapType) {
+		
+		fragmentManager = null;
+		if (worldMap != null) {
+			worldMap.dispose(); // this will also clean up the fragmentManager (passed to it during construction)
+			worldMap = null;
+		}
+
+		if (mapType != WorldDimensionType.NONE) {
+			fragmentManager = createFragmentManager(mapType); 
+			worldMap = new Map(fragmentManager); //TODO: implement more layers
+			worldMap.setZoom(curZoom);
+		}
+	}
+	
+	
+	private FragmentManager createFragmentManager(WorldDimensionType mapType) {
+		
+		FragmentManager result = null;
+		
+		if (mapType == WorldDimensionType.OVERWORLD) {
+		
+			result = new FragmentManager(
+				mapType,
+				new ImageLayer[] {
+					new BiomeLayer(),
+					new SlimeLayer()
+				},
+				new LiveLayer[] {
+					new GridLayer()
+				},
+				new IconLayer[] {
+					new VillageLayer(),
+					new OceanMonumentLayer(),
+					new StrongholdLayer(),
+					new TempleLayer(),
+					new SpawnLayer(),
+					new NetherFortressLayer(),
+					new MineshaftLayer(),
+					
+					// Including BiomeIconLayers in the MapViewer is only useful for debug purposes,
+					// there's no need to display this data in the main window - the BiomeIconLayers 
+					// are for MapExporter.
+					// Plus you have to move the biome off screen then back onto the screen in order
+					// to remove the excess mapObjects created for each fragment before they were
+					// condensed into one.
+					//
+					// new BiomeIconLayer(MapMarkers.RAREBIOME_MUSHROOM_ISLAND),
+					// new BiomeIconLayer(MapMarkers.RAREBIOME_ICE_PLAINS_SPIKES),
+					// new BiomeIconLayer(MapMarkers.RAREBIOME_FLOWER_FOREST),
+					// new BiomeIconLayer(MapMarkers.RAREBIOME_MESA),
+					
+					playerLayer
+				}
+			);
+		
+		} else if (mapType == WorldDimensionType.THEEND) {
+			
+			result = new FragmentManager(
+				mapType,
+				new ImageLayer[] {
+					new EndIslandsLayer()
+				},
+				new LiveLayer[] {
+					new GridLayer()
+				},
+				new IconLayer[] {
+					new EndCityLayer()
+				}
+			);		
+		}		
+		
+		return result;
 	}
 	
 	@Override
@@ -208,8 +255,11 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 		float time = Math.min(Math.max(0, currentTime - lastTime), 100) / 1000.0f;
 		lastTime = currentTime;
 		
-		if (Options.instance.showEndChunks.get()) {
+		updateWorldDimension(); // incase a menu selection has changed the options.
+		if (worldMap.getWorldDimension() == WorldDimensionType.THEEND) {
 			// Draw the End Sky
+			// ToDo: if you move the texture around randomly it should look more like the void
+			//       (but TexturePaint is aligned with the g2d raster rather than something controllable)			
 			g2d.setPaint(endVoidTexturePaint);			
 		} else {
 			g2d.setColor(Color.black);			
@@ -394,7 +444,7 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 		BufferedImage image = new BufferedImage(worldMap.width, worldMap.height, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g2d = image.createGraphics();
 		
-		if (Options.instance.showEndChunks.get()) {
+		if (worldMap.getWorldDimension() == WorldDimensionType.THEEND) {
 			// Draw the End Sky
 			g2d.setPaint(endVoidTexturePaint);
 			g2d.fillRect(0, 0, this.getWidth(), this.getHeight());
@@ -459,6 +509,10 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 		return fragmentManager;
 	}
 
+	/** 
+	 * Don't cache this value (unless you're prepared to monitor for changes 
+	 * to which WorldDimension is being displayed by the MapViewer). 
+	 */
 	public Map getMap() {
 		return worldMap;
 	}

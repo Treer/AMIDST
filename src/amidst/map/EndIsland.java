@@ -12,7 +12,7 @@ public class EndIsland {
 	public int ChunkX, ChunkZ;
 	public float ErosionFactor;
 	
-	public static final double cIslandDensityThreshold = -0.8999999761581421;
+	public static final float cIslandDensityThreshold = -0.9f; // When cast to double, -0.9 will become -0.8999999761581421, which is why you might see that value in Minecraft's .jar
 	
 	private static SimplexNoise _cachedNoiseFunction = null;
 	private static long _cachedNoiseFunctionSeed;

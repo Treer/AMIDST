@@ -17,7 +17,7 @@ public class Map {
 	private static final boolean START = true, END = false;
 	private FragmentManager fragmentManager;
 	
-	private Fragment startNode = new Fragment();
+	private Fragment startNode;
 	
 	private double scale = 0.25;
 	private Point2D.Double start;
@@ -34,6 +34,8 @@ public class Map {
 	
 	// TODO : This must be changed with the removal of ChunkManager
 	public Map(FragmentManager fragmentManager) {
+
+		this.startNode = fragmentManager.fragment_FactoryMethod(new ImageLayer[0], null, null);
 		this.fragmentManager = fragmentManager;
 		fragmentManager.setMap(this);
 		mat = new AffineTransform();
@@ -88,6 +90,10 @@ public class Map {
 		}				
 	}
 	
+	public WorldDimensionType getWorldDimension() {
+		
+		return fragmentManager.worldDimensionType;
+	}
 	
 	public List<MapObject> getMapObjects() {
 
@@ -435,11 +441,6 @@ public class Map {
 	}
 
 	public String getBiomeAliasAt(Point point) {
-		
-		if (Options.instance.showEndChunks.get()) {
-			// The map is displaying The End - it's all one biome
-			return Options.instance.biomeColorProfile.getAliasForId(Biome.theEnd.index);
-		}
 		
 		Fragment frag = startNode;
 		while (frag.hasNext) {

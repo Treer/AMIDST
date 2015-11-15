@@ -7,8 +7,10 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 
+import amidst.Options;
 import amidst.logging.Log;
 import amidst.map.Map;
+import amidst.map.WorldDimensionType;
 import amidst.map.layers.BiomeLayer;
 import amidst.minecraft.Biome;
 import MoF.MapViewer;
@@ -51,9 +53,18 @@ public class BiomeWidget extends PanelWidget {
 		forceVisibility(false);
 	}
 
+	/** can return null! */
 	private BiomeLayer getBiomeLayer() {
 		BiomeLayer result = (BiomeLayer) mapViewer.getFragmentManager().getLayer(BiomeLayer.class);
-		if (result == null) Log.e("BiomeWidget: BiomeLayer is missing!");
+		if (result == null) {
+			// Perhaps mapViewer is showing The End?
+			if (!targetVisibility) {
+				// The map probably changed to The End (which has no biome layer), 
+				// and the widget is still fading out.
+			} else {
+				Log.e("BiomeWidget: BiomeLayer is missing!"); 				
+			}
+		}
 		return result;
 	}	
 	
@@ -89,7 +100,7 @@ public class BiomeWidget extends PanelWidget {
 		
 		for (int i = 0; i < biomes.size(); i++) {
 			Biome biome = biomes.get(i);
-			if (biomeLayer.isBiomeSelected(biome.index))
+			if (biomeLayer != null && biomeLayer.isBiomeSelected(biome.index))
 				g2d.setColor(((i % 2) == 1)?biomeLitBgColor1:biomeLitBgColor2);
 			else
 				g2d.setColor(((i % 2) == 1)?biomeBgColor1:biomeBgColor2);
@@ -165,49 +176,55 @@ public class BiomeWidget extends PanelWidget {
 		}
 		
 		BiomeLayer biomeLayer = getBiomeLayer();	
+		if (biomeLayer != null) {
 		
-		boolean needsRedraw = false;
-		if ((mouseX > innerBox.x - x) &&
-			(mouseX < innerBox.x - x + innerBox.width) &&
-			(mouseY > innerBox.y - y) &&
-			(mouseY < innerBox.y - y + innerBox.height)) {
-			int id = (mouseY - (innerBox.y - y) - biomeListYOffset) / 16;
-			if (id < biomes.size()) {
-				biomeLayer.toggleBiomeSelect(biomes.get(id).index);
-				needsRedraw = true;
-			}
-		}
-		
-		// TODO: These values are temporarly hard coded for the sake of a fast release
-		if ((mouseY > height - 25) && (mouseY < height - 9)) {
-			if ((mouseX > 117) && (mouseX < 139)) {
-				biomeLayer.selectAllBiomes();
-				needsRedraw = true;
-			} else if ((mouseX > 143) && (mouseX < 197)) {
-				for (int i = 128; i < Biome.biomes.length; i++)
-					if (Biome.biomes[i] != null)
-						biomeLayer.selectBiome(i);
-				needsRedraw = true;
-			} else if ((mouseX > 203) && (mouseX < 242)) {
-				biomeLayer.deselectAllBiomes();
-				needsRedraw = true;
-			}
-		}
-		if (needsRedraw) {
-			(new Thread(new Runnable() {
-				@Override
-				public void run() {
-					mapViewer.getMap().repaintImageLayer(getBiomeLayer().getLayerId());
+			boolean needsRedraw = false;
+			if ((mouseX > innerBox.x - x) &&
+				(mouseX < innerBox.x - x + innerBox.width) &&
+				(mouseY > innerBox.y - y) &&
+				(mouseY < innerBox.y - y + innerBox.height)) {
+				int id = (mouseY - (innerBox.y - y) - biomeListYOffset) / 16;
+				if (id < biomes.size()) {
+					biomeLayer.toggleBiomeSelect(biomes.get(id).index);
+					needsRedraw = true;
 				}
-			})).start();
+			}
+			
+			// TODO: These values are temporarly hard coded for the sake of a fast release
+			if ((mouseY > height - 25) && (mouseY < height - 9)) {
+				if ((mouseX > 117) && (mouseX < 139)) {
+					biomeLayer.selectAllBiomes();
+					needsRedraw = true;
+				} else if ((mouseX > 143) && (mouseX < 197)) {
+					for (int i = 128; i < Biome.biomes.length; i++)
+						if (Biome.biomes[i] != null)
+							biomeLayer.selectBiome(i);
+					needsRedraw = true;
+				} else if ((mouseX > 203) && (mouseX < 242)) {
+					biomeLayer.deselectAllBiomes();
+					needsRedraw = true;
+				}
+			}
+			if (needsRedraw) {
+				(new Thread(new Runnable() {
+					@Override
+					public void run() {
+						mapViewer.getMap().repaintImageLayer(getBiomeLayer().getLayerId());
+					}
+				})).start();
+			}
 		}
 		return true;
 	}
 	
 	@Override
 	public boolean onVisibilityCheck() {
+		
+		// getBiomeLayer() will fail if the mapViewer isn't showing the Overworld. 	
+		boolean isOverworld = mapViewer.getFragmentManager().worldDimensionType == WorldDimensionType.OVERWORLD;
+		
 		height = Math.max(200, mapViewer.getHeight() - 200);
-		return BiomeToggleWidget.isBiomeWidgetVisible & (height > 200);
+		return isOverworld && BiomeToggleWidget.isBiomeWidgetVisible && (height > 200);
 	}
 	
 	private void setMapViewer(MapViewer mapViewer) {

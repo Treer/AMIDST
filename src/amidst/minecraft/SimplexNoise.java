@@ -1,7 +1,9 @@
 package amidst.minecraft;
-//This file has been adapted for use in AmidstExporter, the 
-//original SimplexNoise code and related documents can be found at:
-//http://webstaff.itn.liu.se/~stegu/simplexnoise/
+// This file has been adapted for use in AmidstExporter, it *should*
+// be compatible with the SimplexNoise generator Minecraft uses. 
+// The original SimplexNoise code by Stefan and Peter, and related 
+// documents can be found at:
+//    http://webstaff.itn.liu.se/~stegu/simplexnoise/
 
 import java.util.Random;
 
@@ -52,15 +54,15 @@ public class SimplexNoise {  // Simplex noise in 2D, 3D and 4D
   
   public SimplexNoise(Random rand) {
 	  
-	  // To remove the need for index wrapping, double the permutation table length
+      // To remove the need for index wrapping, double the permutation table length
       perm      = new short[512];
       permMod12 = new short[512];
 	  
-	  // Minecraft uses the PRNG 3 times before building the 
-	  // permutation table.
-	  rand.nextDouble();
-	  rand.nextDouble();
-	  rand.nextDouble();
+      // Minecraft uses the PRNG 3 times before building the 
+      // permutation table.
+      rand.nextDouble();
+      rand.nextDouble();
+      rand.nextDouble();
 	  	  
       // Build a permutation table using our seeded PRNG
       for (short i = 0; i < 256; ++i) {

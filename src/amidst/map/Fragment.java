@@ -11,16 +11,13 @@ import amidst.Options;
 import amidst.logging.Log;
 import amidst.minecraft.MinecraftUtil;
 
-public class Fragment {
+public abstract class Fragment {
 	public static final int SIZE = 512, SIZE_SHIFT = 9, MAX_OBJECTS_PER_FRAGMENT = 32, BIOME_SIZE = SIZE >> 2, SIZE_IN_CHUNKS = SIZE >> 4;
 	private static AffineTransform drawMatrix = new AffineTransform();
 	public int blockX, blockY;
 	
 	public short[] biomeData = new short[BIOME_SIZE * BIOME_SIZE];
 
-	/** Access this via getEndIslands() method */
-	private List<EndIsland> endIslands = null;
-	
 	private ImageLayer[] imageLayers;
 	private LiveLayer[] liveLayers;
 	private IconLayer[] iconLayers;
@@ -43,6 +40,19 @@ public class Fragment {
 	
 	private static ThreadLocal<int[]> dataCache = new ThreadLocal<int[]>();
 		
+	/** subclasses should implement this to initialize the values in the biomeData array */
+	abstract protected void loadBiomeData();
+	
+	/** 
+	 * initializes all of the biomeData array to the same value. 
+	 * (useful for some subclasses for their loadBiomeData() implementation) 
+	 */
+	protected void fillBiomeData(short value) {
+		for (int i = 0; i < BIOME_SIZE * BIOME_SIZE; i++) {
+			biomeData[i] = value;
+		}		
+	}
+		
 	public Fragment(ImageLayer... layers) {
 		this(layers, null, null);
 	}
@@ -60,16 +70,15 @@ public class Fragment {
 		synchronized (loadLock) {
 			if (isLoaded)
 				Log.w("This should never happen!");
-			int[] data = MinecraftUtil.getBiomeData(blockX >> 2, blockY >> 2, BIOME_SIZE, BIOME_SIZE, true);
-			for (int i = 0; i < BIOME_SIZE * BIOME_SIZE; i++)
-				biomeData[i] = (short)data[i];
+			
+			loadBiomeData();
+			
 			for (int i = 0; i < imageLayers.length; i++)
 				imageLayers[i].load(this);
 			for (int i = 0; i < iconLayers.length; i++)
 				iconLayers[i].generateMapObjects(this);
 			alpha = Options.instance.mapFading.get()?0.0f:1.0f;
 			isLoaded = true;
-			endIslands = null;
 		}
 	}
 	
@@ -181,18 +190,6 @@ public class Fragment {
 	}
 	public int getFragmentY() {;
 		return blockY >> SIZE_SHIFT;
-	}
-	
-	public List<EndIsland> getEndIslands() {
-		if (endIslands == null) {
-			endIslands = EndIsland.findSurroundingIslands(
-				getChunkX(), 
-				getChunkY(), 
-				SIZE_IN_CHUNKS,
-				SIZE_IN_CHUNKS
-			);
-		}
-		return endIslands;
 	}
 	
 	public void setNext(Fragment frag) {

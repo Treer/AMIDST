@@ -30,6 +30,7 @@ import amidst.map.LiveLayer;
 import amidst.map.Map;
 import amidst.map.MapMarkers;
 import amidst.map.MapObject;
+import amidst.map.WorldDimensionType;
 import amidst.map.layers.BiomeIconLayer;
 import amidst.map.layers.EndCityLayer;
 import amidst.map.layers.NetherFortressLayer;
@@ -54,8 +55,10 @@ public class MapExporter implements FragmentManagerListener {
 	private boolean mapGenerationComplete = false;
 	private boolean processingRequestsInProgress = false;
 
-	private FragmentManager fragmentManager;
-	private Map exportMap;
+	/** access this via getFragmentManager() */
+	private FragmentManager _fragmentManager = null;
+	/** access this via getExportMap() */
+	private Map _map = null;
 	private OceanMaskLayer oceanLayer = new OceanMaskLayer();
 	private String seed;
 	private IconLayer[] iconLayers;
@@ -63,6 +66,7 @@ public class MapExporter implements FragmentManagerListener {
 	
 	enum RequestType {
 		OceanMap,
+		EndMap,
 		OverworldLocationList,
 		NetherLocationList,
 		EndLocationList
@@ -94,6 +98,18 @@ public class MapExporter implements FragmentManagerListener {
 		}
 	}
 
+	private FragmentManager getFragmentManager() {
+		if (_fragmentManager == null) _fragmentManager = CreateFragmentManager(WorldDimensionType.OVERWORLD);
+		return _fragmentManager;
+	}
+	
+	private Map getMap() {
+		// Defer creation of the _map until needed, because it's resource 
+		// intensive and this class rarely gets used (but is always created).
+		if (_map == null) _map = new Map(getFragmentManager());
+		return _map;
+	}
+		
 	/** Starts the fragmentManager creating all the map fragments required */ 
 	private void startMapGeneration() {
 		
@@ -103,13 +119,15 @@ public class MapExporter implements FragmentManagerListener {
 		assert !mapGenerationInitiated;
 		mapGenerationInitiated = true;
 				
-		exportMap.setZoom(1.0 / cExpectedBlocksPerPixel);
-		exportMap.width  = cExpectedOceamMaskSize;
-		exportMap.height = cExpectedOceamMaskSize;		
+		Map map = getMap();
+		
+		map.setZoom(1.0 / cExpectedBlocksPerPixel);
+		map.width  = cExpectedOceamMaskSize;
+		map.height = cExpectedOceamMaskSize;		
 
-		exportMap.centerOn(0, 0);
-		exportMap.requestFragments();
-		fragmentManager.addListener(this); // to procrastinate: slight race condition here, in theory anyway		
+		map.centerOn(0, 0);
+		map.requestFragments();
+		getFragmentManager().addListener(this); // ToDo: to procrastinate - slight race condition here, in theory anyway		
 	}
 	
 	/** Listener for when fragmentManager finishes generating the map */
@@ -239,17 +257,18 @@ public class MapExporter implements FragmentManagerListener {
 		
 		// Now that we have complete biome information we can remove the excess 
 		// biome icons from all the fragments.
+		Map map = getMap();
 		for(IconLayer layer : iconLayers) {
 			if (layer instanceof BiomeIconLayer) {
 				BiomeIconLayer biomeIconLayer = (BiomeIconLayer)layer;				
 				biomeIconLayer.combineNearbyCandidates();
 			}			
 		}
-		exportMap.repaintFragments();
+		map.repaintFragments();
 		
 		
 		// Sort all the map objects so they will be listed in clumps of the same type. 
-		List<MapObject> mapObjectsUnsorted = exportMap.getMapObjects();
+		List<MapObject> mapObjectsUnsorted = map.getMapObjects();
 		List<MapObject> mapObjects = new ArrayList<MapObject>();		
 		for(MapMarkers objectType : MapMarkers.values()) {
 			for(MapObject location : mapObjectsUnsorted) {	
@@ -296,12 +315,12 @@ public class MapExporter implements FragmentManagerListener {
 				for(MapObject location : mapObjects) {				
 					LocationTypeInfo info = locationTable.get(location.type);
 					if (info != null && info.isSpoilerLocation) {
-						writer.println(info.LocationFileEntry(location, exportMap));
+						writer.println(info.LocationFileEntry(location, map));
 						
 						if (location.type == MapMarkers.RAREBIOME_MUSHROOM_ISLAND) {
 							// Include an island overlay on top of the mushroom location
 							LocationTypeInfo overlay = new LocationTypeInfo("IslandOverlay", true);
-							writer.println(overlay.LocationFileEntry(location, exportMap));							
+							writer.println(overlay.LocationFileEntry(location, map));							
 						}
 					}
 				}
@@ -335,7 +354,7 @@ public class MapExporter implements FragmentManagerListener {
 						int x = Math.abs(naturalCoords.x);
 						int y = Math.abs(naturalCoords.y);
 						if (x <= rangeLimit && y <= rangeLimit && (x > lastRange || y > lastRange)) {						
-							writer.println(info.LocationFileEntry(location, exportMap));
+							writer.println(info.LocationFileEntry(location, map));
 						}
 					}
 				}
@@ -358,9 +377,11 @@ public class MapExporter implements FragmentManagerListener {
 		// oceanMap must already be generated to export it to an image.
 		assert mapGenerationComplete;
 		
+		Map map = getMap();
+		
 		// Create a black&white 1-bit-per-pixel BufferedImage
-		int width = exportMap.width;
-		int height = exportMap.height;
+		int width = map.width;
+		int height = map.height;
 		int bytesPerRow = (int)Math.ceil(width / 8.0);  
 	    
 		byte[] rasterData = new byte[height * bytesPerRow];  			      
@@ -395,7 +416,7 @@ public class MapExporter implements FragmentManagerListener {
 		layerVisibilityController.StoreState();		
 		try {
 			layerVisibilityController.SetAll(false);
-			exportMap.draw(g2d, 1);
+			map.draw(g2d, 1);
 		} finally {
 			layerVisibilityController.RestoreState();
 		}
@@ -436,15 +457,16 @@ public class MapExporter implements FragmentManagerListener {
 	}
 		
 	public void dispose() {
-		fragmentManager = null;
-		exportMap.dispose(); // this will also clean up the fragmentManager (passed to it during construction)
+		_fragmentManager = null;
+		if (_map != null) {
+			_map.dispose(); // this will also clean up the fragmentManager (passed to it during construction)
+			_map = null;
+		}
 	}
 		
-	public MapExporter(long seed) {
+	private FragmentManager CreateFragmentManager(WorldDimensionType dimensionType) {
 		
-		this.seed = String.format("%d", seed);
-
-		oceanLayer.visible = true;
+		assert dimensionType == WorldDimensionType.OVERWORLD; // Exporting of The End not implemented yet
 		
 		iconLayers = new IconLayer[] {
 			new VillageLayer(),
@@ -460,12 +482,17 @@ public class MapExporter implements FragmentManagerListener {
 			new BiomeIconLayer(MapMarkers.RAREBIOME_MESA, false)
 		};		
 		
-		fragmentManager = new FragmentManager(
+		return new FragmentManager(
+			dimensionType,
 			new ImageLayer[] { oceanLayer },
 			new LiveLayer[] { },
 			iconLayers
-		);				
+		);						
+	}	
+	
+	public MapExporter(long seed) {
 		
-		exportMap = new Map(fragmentManager);
+		this.seed = String.format("%d", seed);
+		oceanLayer.visible = true;
 	}
 }

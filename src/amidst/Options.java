@@ -75,7 +75,7 @@ public enum Options {
 		showStrongholds	     = new BooleanPrefModel(pref, "strongholdIcons",	 true);
 		showPlayers		     = new BooleanPrefModel(pref, "playerIcons",		 true);
 		showTemples		     = new BooleanPrefModel(pref, "templeIcons",		 true);
-		showEndCities	     = new BooleanPrefModel(pref, "endCityIcons",		 false);
+		showEndCities	     = new BooleanPrefModel(pref, "endCityIcons",		 true);
 		showVillages		 = new BooleanPrefModel(pref, "villageIcons",		 true);
 		showOceanMonuments	 = new BooleanPrefModel(pref, "oceanMonumentIcons",	 true);
 		showSpawn			 = new BooleanPrefModel(pref, "spawnIcon",		     true);
