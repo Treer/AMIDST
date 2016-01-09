@@ -14,6 +14,7 @@ import amidst.preferences.SelectPrefModel.SelectButtonModel;
 import amidst.resources.ResourceLoader;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 import javax.swing.event.DocumentEvent;
@@ -389,7 +390,17 @@ public class AmidstMenu extends JMenuBar {
 			
 		}
 	}
-
+	
+	public class DisplayingRadioButton extends JRadioButtonMenuItem {
+		private DisplayingRadioButton(String text, BufferedImage icon, int key, JToggleButton.ToggleButtonModel model) {
+			super(text, (icon != null) ? new ImageIcon(icon) : null);
+			if (key != -1) {
+				setAccelerator(KeyStroke.getKeyStroke(key, InputEvent.CTRL_DOWN_MASK));
+			}
+			if (model != null) setModel(model);
+		}
+	}
+	
 	public class DisplayingCheckbox extends JCheckBoxMenuItem {
 		private DisplayingCheckbox(String text, BufferedImage icon, int key, JToggleButton.ToggleButtonModel model) {
 			super(text, (icon != null) ? new ImageIcon(icon) : null);
@@ -472,72 +483,157 @@ public class AmidstMenu extends JMenuBar {
 		}
 		
 		private class LayersMenu extends JMenu {
+			
+			ButtonGroup _radioButtonGroup;
+			
 			private LayersMenu() {
-				super("Layers");
-
+				super("Layers");				
+				
+				DisplayingRadioButton overworldRadioButton = null;
+				DisplayingRadioButton theEndRadioButton = null;
+				
+				LookAndFeel previousLF = UIManager.getLookAndFeel();
+			    try {
+			    	// The radio buttons have to be created using MetalLookAndFeel because
+			    	// The Windows LAF radio buttons are completely unsuitable (i.e. no radio 
+			    	// button is drawn at all if the item is not selected, and if it is selected 
+			    	// then an unrecognizable flat dot is drawn with a square blue background). 
+			    	// The Windows LAF is so bad here it might even be bug in the library, but 
+			    	// MetalLookAndFeel is guaranteed to be recognizably a radio button in both 
+			    	// states.
+			    	// (Because our radio buttons aren't spatially grouped together, they all MUST 
+			    	// be able to indicate that they are a radio button)
+			    	//
+			    	// ToDo: It would be much better to fix only the radiobutton part of the 
+			    	// Windows/System-default JRadioButtonMenuItem, since MetalLookAndFeel also gives 
+			    	// the menuItem a different background and hotkey text style. But I don't know
+			    	// enough swing UI to do this yet. 
+			    	UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+			    	
+			    	theEndRadioButton = new DisplayingRadioButton(
+						"The End",
+						null, // ResourceLoader.getImage("end_islands.png"),
+						KeyEvent.VK_E,
+						Options.instance.showEndChunks
+					);			    	
+			    	overworldRadioButton = new DisplayingRadioButton(
+						"The Overworld",
+						null,
+						KeyEvent.VK_O,
+						null 
+					);
+			    	
+			        UIManager.setLookAndFeel(previousLF);
+			    } catch (IllegalAccessException ex) {
+				} catch (UnsupportedLookAndFeelException ex) {
+				} catch (InstantiationException ex) {
+				} catch (ClassNotFoundException ex) {}
+				
+				// The overworldRadioButton isn't connected to a model, its state will just 
+				// be mutually exclusive with theEndRadioButton due to being in the same
+				// ButtonGroup, so we must initiate its state in case theEndRadioButton
+				// isn't the one currently selected.
+				overworldRadioButton.setSelected(!Options.instance.showEndCities.isPressed());
+		    	
+				_radioButtonGroup = new ButtonGroup();
+				_radioButtonGroup.add(overworldRadioButton);
+				_radioButtonGroup.add(theEndRadioButton);								
+				
+		    	// Unlike other themes, the radio button in MetalLookAndFeel is lacking a left
+				// indent and does not respond to setMargin(). So I'm creating an extra border 
+				// to indent the radio button to a more suitable visual position (centered with
+				// the icons below). This feels like a hack, so if you have a better way to do 
+				// it, then fix it.			    	
+		    	Border leftIndentBorder = BorderFactory.createEmptyBorder(0, 8, 0, 0);
+		    	Border compoundBorder = BorderFactory.createCompoundBorder(
+		    		overworldRadioButton.getBorder(),
+		    		leftIndentBorder
+		    	);
+		    	overworldRadioButton.setBorder(compoundBorder);
+		    	compoundBorder = BorderFactory.createCompoundBorder(
+		    		theEndRadioButton.getBorder(),
+		    		leftIndentBorder
+		    	);
+		    	theEndRadioButton.setBorder(compoundBorder);
+		    			
+		    	// Cover up the fact that MetalLookAndFeel components might have a different 
+		    	// background to the system-default ones.
+		    	overworldRadioButton.setBackground(this.getBackground());
+		    	theEndRadioButton.setBackground(this.getBackground());
+		    	
+		    	// Make the dimension selection radio buttons look more like
+		    	// subheadings in the menu, via a larger italic font.
+				Font dimensionSelectionFont=new Font(overworldRadioButton.getFont().getName(),Font.ITALIC,overworldRadioButton.getFont().getSize() + 3);  
+				overworldRadioButton.setFont(dimensionSelectionFont);  				
+				theEndRadioButton.setFont(dimensionSelectionFont);			    	
+				
+			    
+			    
 				add(new DisplayingCheckbox("Grid",
 					ResourceLoader.getImage("grid.png"),
-					KeyEvent.VK_1,
+					KeyEvent.VK_0,
 					Options.instance.showGrid));
+
+				addSeparator();														
 				
+				add(overworldRadioButton);
+																			
 				add(new DisplayingCheckbox("Slime chunks",
 					ResourceLoader.getImage("slime.png"),
-					KeyEvent.VK_2,
+					KeyEvent.VK_1,
 					Options.instance.showSlimeChunks));
 				
 				add(new DisplayingCheckbox("Village Icons",
 					ResourceLoader.getImage("village.png"),
-					KeyEvent.VK_3,
+					KeyEvent.VK_2,
 					Options.instance.showVillages));
 					
 				add(new DisplayingCheckbox("Temple/Igloo/Witch Hut Icons",
 					ResourceLoader.getImage("desert.png"),
-					KeyEvent.VK_4,
+					KeyEvent.VK_3,
 					Options.instance.showTemples));
 
 				add(new DisplayingCheckbox("Ocean Monument Icons",
 					ResourceLoader.getImage("ocean_monument.png"),
-					KeyEvent.VK_5,
+					KeyEvent.VK_4,
 					Options.instance.showOceanMonuments));
 						
 				add(new DisplayingCheckbox("Stronghold Icons",
 					ResourceLoader.getImage("stronghold.png"),
-					KeyEvent.VK_6,
+					KeyEvent.VK_5,
 					Options.instance.showStrongholds));
 				
 				add(new DisplayingCheckbox("Mineshaft Icons",
 					ResourceLoader.getImage("mineshaft.png"),
-					KeyEvent.VK_7,
+					KeyEvent.VK_6,
 					Options.instance.showMineshafts));
 
 				add(new DisplayingCheckbox("Spawn Location Icon",
 					ResourceLoader.getImage("spawn.png"),
-					KeyEvent.VK_8,
+					KeyEvent.VK_7,
 					Options.instance.showSpawn));
 
 				add(new DisplayingCheckbox("Player Icons",
 					ResourceLoader.getImage("player.png"),
-					KeyEvent.VK_9,
+					KeyEvent.VK_8,
 					Options.instance.showPlayers));
 				
 				add(new DisplayingCheckbox("Nether Fortress Icons",
 					ResourceLoader.getImage("nether_fortress.png"),
-					KeyEvent.VK_0,
+					KeyEvent.VK_9,
 					Options.instance.showNetherFortresses));
+				
+				addSeparator();				
+				
+				add(theEndRadioButton);				
 				
 				add(new DisplayingCheckbox("End City Icons",
 					ResourceLoader.getImage("end_city.png"),
-					KeyEvent.VK_C,
-					Options.instance.showEndCities));
-					
-				add(new DisplayingCheckbox("The End",
-					ResourceLoader.getImage("end_islands.png"),
-					KeyEvent.VK_E,
-					Options.instance.showEndChunks));
+					KeyEvent.VK_Q,
+					Options.instance.showEndCities));													
 			}
-			
-
 		}
+		
 		private class CaptureMenuItem extends JMenuItem {
 			private CaptureMenuItem() {
 				super("Capture");
