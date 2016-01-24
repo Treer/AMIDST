@@ -146,6 +146,8 @@ public class EndCityLayer extends IconLayer {
 	
 	protected ChunkProbability hasSuitableIslandFoundation(Fragment_TheEnd frag, int chunkX, int chunkZ) {
 		
+		ChunkProbability result = ChunkProbability.None;
+		
 		// requiredInfluence is a value between 0 and 80 that I'm finding by
 		// trial and error. If the island influence is 0 or higher then an 
 		// End City can spawn, but they don't spawn unless all of the ground
@@ -170,12 +172,13 @@ public class EndCityLayer extends IconLayer {
 				
 				// In the meantime, fall back on the requiredInfluence heuristic				
 				if (influence >= requiredInfluence) {
-					return ChunkProbability.Likely;				
+					result = ChunkProbability.Likely;
+					break;
 				} else {
-					return ChunkProbability.Possible;									
+					result = ChunkProbability.Possible;									
 				}
 			}
 		}		
-		return ChunkProbability.None;
+		return result;
 	}
 }
