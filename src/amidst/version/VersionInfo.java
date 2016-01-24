@@ -4,11 +4,23 @@ package amidst.version;
  */
 public enum VersionInfo {
 	unknown(null),
-	V15w44b("qtoombkapb[Llq;mn[J[[Jmj"),
-	V15w43c("qsoombkapb[Llq;mn[J[[Jmj"),
-	V15w31c("oxnvlnjt[Llg;lz[J[[Jlv"),
-	V1_8_8("orntlljs[Lle;lx[J[[Jlt"), // 1.8.4, 1.8.5, 1.8.6, 1.8.7, and 1.8.8 all have the same typeDump version ID. They are all security issue fixes.
-	V1_8_3("osnulmjt[Llf;ly[J[[Jlu"), // 1.8.3 and 1.8.2 have the same typeDump version ID - probably because 1.8.2 -> 1.8.3 was a fix for a server-side bug (https://mojang.com/2015/02/minecraft-1-8-2-is-now-available/)
+	V16w03a("qvoomajzpb[Llp;mm[J[[Jmi"),  // matches the versions 16w03a and 16w02a      
+	V15w51b("quonmajzpa[Llp;mm[J[[Jmi"),  // matches the versions 15w51b and 15w51a      
+	V15w50a("qtonmajzpa[Llp;mm[J[[Jmi"),  // matches the versions 15w50a, 15w49b, and 15w47c      
+	V15w46a("qsonmajzpa[Llp;mm[J[[Jmi"),  // matches the versions 15w46a      
+	V15w45a("qtoombkapb[Llq;mn[J[[Jmj"),  // matches the versions 15w45a and 15w44b      
+	V15w43c("qsoombkapb[Llq;mn[J[[Jmj"),  // matches the versions 15w43c      
+	V15w42a("qnojlzjzow[Llp;ml[J[[Jmh"),  // matches the versions 15w42a      
+	V15w41b("qmoilyjyov[Llo;mk[J[[Jmg"),  // matches the versions 15w41b      
+	V15w40b("qhoelujuor[Llk;mg[J[[Jmc"),  // matches the versions 15w40b, 15w39c, 15w38b, and 15w37a      
+	V15w36d("qgodltjuoq[Lll;mf[J[[Jmb"),  // matches the versions 15w36d      
+	V15w35e("qeoclsjuop[Llk;me[J[[Jma"),  // matches the versions 15w35e      
+	V15w34d("qdoblsjuoo[Lll;me[J[[Jma"),  // matches the versions 15w34d      
+	V15w33c("qanzlrjtom[Llk;md[J[[Jlz"),  // matches the versions 15w33c      
+	V15w32c("pmnvlnjt[Llg;lz[J[[Jlv"),    // matches the versions 15w32c      
+	V15w31c("oxnvlnjt[Llg;lz[J[[Jlv"),    // matches the versions 15w31c      	
+	V1_8_8("orntlljs[Lle;lx[J[[Jlt"),     // 1.8.4, 1.8.5, 1.8.6, 1.8.7, and 1.8.8 all have the same typeDump version ID. They are all security issue fixes.
+	V1_8_3("osnulmjt[Llf;ly[J[[Jlu"),     // 1.8.3 and 1.8.2 have the same typeDump version ID - probably because 1.8.2 -> 1.8.3 was a fix for a server-side bug (https://mojang.com/2015/02/minecraft-1-8-2-is-now-available/)
 	V1_8_1("wduyrdnq[Lqu;sp[J[[Jsa"),
 	V1_8("wbuwrcnp[Lqt;sn[J[[Jry"),
 	V14w21b("tjseoylw[Loq;qd[J[[Jpo"),
