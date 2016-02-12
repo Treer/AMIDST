@@ -119,13 +119,26 @@ public class StrongholdLayer extends IconLayer {
 				}
 			}
 		}
-				
-		int ring = 1;
+
+		// Issue MC-92289 was fixed in V16w06a (https://bugs.mojang.com/browse/MC-92289)
+		// giving a new stronghold location algorithm.
+		boolean emulateBug_MC92289 = !MinecraftUtil.getVersion().isAtLeast(VersionInfo.V16w06a);
+		int ring = emulateBug_MC92289 ? 1 : 0;
+
 		int structuresPerRing = option_structuresOnFirstRing;
 		int currentRingStructureCount = 0;
 		double angle = random.nextDouble() * 3.141592653589793D * 2.0D;
 		for (int i = 0; i < option_totalStructureCount; i++) {
-			double distance = ((1.25D * ring) + random.nextDouble()) * (option_distance_inChunks * ring);
+			
+			double distance;
+			if (emulateBug_MC92289) {
+				// ring starts at 1
+				distance = ((1.25D * ring) + random.nextDouble()) * (option_distance_inChunks * ring);
+			} else {
+				// ring starts at 0
+				distance = (4.0 * option_distance_inChunks) + (6.0 * ring * option_distance_inChunks) + (random.nextDouble() - 0.5) * (option_distance_inChunks * 2.5);				
+			}
+			
 			int x = (int)Math.round(Math.cos(angle) * distance);
 			int y = (int)Math.round(Math.sin(angle) * distance);
 			
@@ -134,13 +147,31 @@ public class StrongholdLayer extends IconLayer {
 				x = strongholdLocation.x >> 4;
 				y = strongholdLocation.y >> 4;
 			}
-			_strongholds[i] = new MapObjectStronghold((x << 4), (y << 4));
-			angle += 6.283185307179586D * ring / structuresPerRing;
-			
-			if (++currentRingStructureCount == structuresPerRing) {
-				ring++;
-				currentRingStructureCount = 0;
-				structuresPerRing += structuresPerRing + random.nextInt(structuresPerRing);				
+			_strongholds[i] = new MapObjectStronghold((x << 4) + 8, (y << 4) + 8);
+
+			if (emulateBug_MC92289) {			
+				angle += 6.283185307179586D * ring / structuresPerRing;			
+				// 15w44b algorithm
+				if (++currentRingStructureCount == structuresPerRing) {
+					ring++;
+					currentRingStructureCount = 0;
+					structuresPerRing += structuresPerRing + random.nextInt(structuresPerRing);
+				}
+				/* 15w31c algorithm
+				if (i == structuresPerRing) {
+					ring += 2 + random.nextInt(5);
+					structuresPerRing += 1 + random.nextInt(2);				
+				}
+				*/
+			} else {
+				angle += 6.283185307179586D / structuresPerRing;			
+				if (++currentRingStructureCount == structuresPerRing) {
+					ring++;
+					currentRingStructureCount = 0;
+					structuresPerRing += 2 * structuresPerRing / (ring + 1);
+					structuresPerRing = Math.min(structuresPerRing, option_totalStructureCount - i);
+					angle += random.nextDouble() * 3.141592653589793 * 2.0;
+				}
 			}
 		}
 	}
