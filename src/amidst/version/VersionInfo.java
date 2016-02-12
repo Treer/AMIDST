@@ -4,7 +4,7 @@ package amidst.version;
  */
 public enum VersionInfo {
 	unknown(null),
-	V16w03a("qvoomajzpb[Llp;mm[J[[Jmi"),  // matches the versions 16w03a and 16w02a      
+	V16w06a("qvoomajzpb[Llp;mm[J[[Jmi"),  // matches the versions 16w06a, 16w05b, 16w04a, 16w03a and 16w02a. Which is a shame because the stronghold alg is different from 16w06a onward      
 	V15w51b("quonmajzpa[Llp;mm[J[[Jmi"),  // matches the versions 15w51b and 15w51a      
 	V15w50a("qtonmajzpa[Llp;mm[J[[Jmi"),  // matches the versions 15w50a, 15w49b, and 15w47c      
 	V15w46a("qsonmajzpa[Llp;mm[J[[Jmi"),  // matches the versions 15w46a      
