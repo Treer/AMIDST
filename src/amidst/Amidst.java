@@ -26,8 +26,8 @@ public class Amidst {
 	public final static int version_minor = 7;
 	public final static String versionOffset = "";
 	public final static int exporter_version_major = 1;
-	public final static int exporter_version_minor = 43;
-	public final static String exporter_versionOffset = " beta";
+	public final static int exporter_version_minor = 44;
+	public final static String exporter_versionOffset = "";
 	public static List<Image> icons = new ArrayList<Image>();
 	public static final Gson gson = new Gson();
 	
@@ -97,7 +97,7 @@ public class Amidst {
 	
 	public static String version() {
 		if (MinecraftUtil.hasInterface())
-			return version_major + "." + version_minor + versionOffset + " [Using Minecraft version: " + MinecraftUtil.getVersion() + "]";
+			return version_major + "." + version_minor + versionOffset + " [recognized Minecraft version: " + MinecraftUtil.getVersion() + "]";
 		return version_major + "." + version_minor + versionOffset;
 	}
 	
