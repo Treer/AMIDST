@@ -1,12 +1,9 @@
 package amidst.map.layers;
 
-import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.List;
-import java.util.Random;
 
 import amidst.Options;
-import amidst.Util;
 import amidst.map.EndIsland;
 import amidst.map.Fragment;
 import amidst.map.Fragment_TheEnd;
@@ -69,6 +66,9 @@ public class EndIslandsLayer extends ImageLayer {
 					blockX = fragmentBlockX + (x << 2); // Shift x left  by 2 instead of 4 because Layer size is 4 blocks per pixel
 					
 					// Determine if the chunk may contain miniature islands
+					// (Unfortunately the "rocky shore" miniature islands are not deterministic
+					// from the world seed, like chorus plants they are decorations whose PRNG state
+					// depends on the order chunks are created/explored in. This makes me sad :( )
 					showRockyShores = (chunkX * chunkX + chunkY * chunkY) > 4096;
 					
 					// Determine whether this 

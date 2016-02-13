@@ -88,7 +88,6 @@ public class EndIsland {
 	
 	/**
 	 * Returns a list of all islands that might be touching a chunk-area. 
-	 * ("Touching" includes the rocky-island-shore that extends from each island)
 	 */
 	public static List<EndIsland> findSurroundingIslands(int chunkX, int chunkY, int chunksWide, int chunksDeep) {
 	
@@ -116,8 +115,14 @@ public class EndIsland {
 	 */
 	public float influenceAt(int blockX, int blockZ) {
 		
-		float testChunkX = blockX / 16.0f;
-		float testChunkZ = blockZ / 16.0f;
+		// Add 8 blocks to both axis because all the Minecraft calculations are
+		// done using chunk coordinates and are converted to being the center of 
+		// the chunk whenever translated to block coordinates, whereas Amidst treats
+		// chunk coords as blockCoordinates >> 4. 
+		// This function also does a floating point divide by 16 instead of shifting
+		// by 4 in order to maintain sub-chunk accuracy with the block coordinates.		
+		float testChunkX = (blockX + 8) / 16.0f;
+		float testChunkZ = (blockZ + 8) / 16.0f;
 
 		int adjConstX = 1;
 		int adjConstZ = 1;
