@@ -120,9 +120,10 @@ public class StrongholdLayer extends IconLayer {
 			}
 		}
 
-		// Issue MC-92289 was fixed in V16w06a (https://bugs.mojang.com/browse/MC-92289)
+		// Issue MC-92289 was fixed in 16w06a (https://bugs.mojang.com/browse/MC-92289)
 		// giving a new stronghold location algorithm.
-		boolean emulateBug_MC92289 = !MinecraftUtil.getVersion().isAtLeast(VersionInfo.V16w06a);
+		// (V1_9_pre2 is the closest we can get to recognising snapshot 16w06a)
+		boolean emulateBug_MC92289 = !MinecraftUtil.getVersion().isAtLeast(VersionInfo.V1_9_pre2);
 		int ring = emulateBug_MC92289 ? 1 : 0;
 
 		int structuresPerRing = option_structuresOnFirstRing;

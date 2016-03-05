@@ -3,8 +3,9 @@ package amidst.version;
 /** Information about what each supported version is
  */
 public enum VersionInfo {
-	unknown(null),
-	V16w06a("qvoomajzpb[Llp;mm[J[[Jmi"),  // matches the versions 16w06a, 16w05b, 16w04a, 16w03a and 16w02a. Which is a shame because the stronghold alg is different from 16w06a onward      
+	unknown(null),	
+	V1_9     ("qwoomajzpb[Llp;mm[J[[Jmi"),// matches the versions 1.9, 1.9-pre4, 1.9-pre3     
+	V1_9_pre2("qvoomajzpb[Llp;mm[J[[Jmi"),// matches the versions 1.9-pre2, 1.9-pre1, 16w07b, 16w06a, 16w05b, 16w04a, 16w03a and 16w02a. Which is a shame because the stronghold alg is different from 16w06a onward      
 	V15w51b("quonmajzpa[Llp;mm[J[[Jmi"),  // matches the versions 15w51b and 15w51a      
 	V15w50a("qtonmajzpa[Llp;mm[J[[Jmi"),  // matches the versions 15w50a, 15w49b, and 15w47c      
 	V15w46a("qsonmajzpa[Llp;mm[J[[Jmi"),  // matches the versions 15w46a      
