@@ -1,6 +1,10 @@
 AMIDST Exporter
 ===============
 
+***Note:*** *A newer version of [AMIDST is available](https://github.com/toolbox4minecraft/amidst/releases), it supports structures from newer Minecraft versions and contains all the extra features provided by AMIDST Exporter — with the exception of export features. My intent was to merge the export features of AMIDST Exporter into AMIDST4 then retire AMIDST Exporter. I have not done this yet, however if you do not need any of the export features then I recommend switching to AMIDST4.*
+
+
+
 This is a version of Amidst with an Export menu added to it, intended for use with the Ink & Parchment map system maintained 
 at [buildwithblocks.info](http://buildwithblocks.info). The compiled/executable version can be [downloaded from here](http://www.buildingwithblocks.info/exportfromseed.html).
 
