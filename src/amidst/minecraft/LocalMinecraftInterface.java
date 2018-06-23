@@ -1,5 +1,7 @@
 package amidst.minecraft;
 
+import javax.swing.JOptionPane;
+
 import amidst.logging.Log;
 import amidst.version.VersionInfo;
 import MoF.SaveLoader.Type;
@@ -64,8 +66,23 @@ public class LocalMinecraftInterface implements IMinecraftInterface {
 			Object worldType = ((MinecraftObject) worldTypeClass.getValue(type.getValue())).get();
 			if (genLayerClass.getMethod("initializeAllBiomeGeneratorsWithParams").exists()) {
 				genLayers = (Object[])genLayerClass.callFunction("initializeAllBiomeGeneratorsWithParams", seed, worldType, generatorOptions);
-			} else {
+			} else if (genLayerClass.getMethod("initializeAllBiomeGenerators").exists()) {
 				genLayers = (Object[])genLayerClass.callFunction("initializeAllBiomeGenerators", seed, worldType);	
+			} else {
+				String message = "AmidstExporter can't hook into this version of Minecraft, it is probably too new :(\r\n" + 
+						"try creating the map with the seed you want in a 1.10 or earlier version of Minecraft\r\n" +
+						"(oceans have probably not changed since then)\r\n" +
+						"\r\nAmidstExporter is old and no longer being maintained, a vanilla Amidst is \r\n" +
+						"maintained at github.com/toolbox4minecraft";
+				Log.e(message);
+				/*
+				JOptionPane.showMessageDialog(
+						null, 
+						message, 
+						"Incompatible versions", 
+						JOptionPane.ERROR_MESSAGE
+				);*/
+				throw new RuntimeException("MinecraftObject not supported. Minecraft profile might be too new");
 			}
 				
 		}

@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import amidst.json.InstallInformation;
+import amidst.json.ReleaseType;
 
 public class MinecraftProfile implements ILatestVersionListListener {
 	public enum Status {
@@ -32,10 +33,10 @@ public class MinecraftProfile implements ILatestVersionListListener {
 	
 	public MinecraftProfile(InstallInformation profile) {
 		this.profile = profile;
-		if (profile.lastVersionId.equals("latest")) {
+		if (profile.getLastVersionId().equals("latest")) {
 			LatestVersionList.get().addAndNotifyLoadListener(this);
 		} else {
-			version = MinecraftVersion.fromVersionId(profile.lastVersionId);
+			version = MinecraftVersion.fromVersionId(profile.getLastVersionId());
 			if (version == null) {
 				status = Status.MISSING;
 				return;
@@ -46,11 +47,11 @@ public class MinecraftProfile implements ILatestVersionListListener {
 	}
 	
 	public String getProfileName() {
-		return profile.name;
+		return profile.getName();
 	}
 	
 	public String getGameDir() {
-		return profile.gameDir;
+		return profile.getGameDir();
 	}
 
 	public String getVersionName() {
@@ -80,9 +81,14 @@ public class MinecraftProfile implements ILatestVersionListListener {
 		case LOADED:
 			status = Status.FOUND;
 			boolean usingSnapshots = false;
-			for (int i = 0; i < profile.allowedReleaseTypes.length; i++)
+			/*
+			for (int i = 0; i < profile.getAllowedReleaseTypes().count(); i++)
 				if (profile.allowedReleaseTypes[i].equals("snapshot"))
 					usingSnapshots = true;
+			*/
+			for (ReleaseType release: profile.getAllowedReleaseTypes()) {
+				if (release == ReleaseType.SNAPSHOT) usingSnapshots = true;
+			}
 			if (usingSnapshots)
 				version = MinecraftVersion.fromLatestSnapshot();
 			else
@@ -91,6 +97,8 @@ public class MinecraftProfile implements ILatestVersionListListener {
 				status = Status.FAILED;
 			else
 				versionName = version.getName();
+
+			if (profile.getName() == null) status = Status.FAILED;			
 			break;
 		case LOADING:
 			status = Status.IDLE;

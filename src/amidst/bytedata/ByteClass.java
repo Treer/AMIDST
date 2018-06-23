@@ -138,6 +138,20 @@ ACC_TRANSIENT	 0x0080	 Declared transient; not written or read by a persistent o
 							constants[q] = new ClassConstant<ReferenceIndex>(tag, offset, new ReferenceIndex(stream.readUnsignedShort(), stream.readUnsignedShort()));
 							offset += 4;
 							break;
+						case 15: //Method handle
+							constants[q] = new ClassConstant<ReferenceIndex>(tag, offset, new ReferenceIndex(stream.readByte(), stream.readUnsignedShort()));
+							offset += 3;
+							break;
+						case 16: //Method type
+							constants[q] = new ClassConstant<Integer>(tag, offset, stream.readUnsignedShort());
+							offset += 2;
+							break;
+						case 18: //Invoke dynamic
+							constants[q] = new ClassConstant<ReferenceIndex>(tag, offset, new ReferenceIndex(stream.readUnsignedShort(), stream.readUnsignedShort()));
+							offset += 4;
+							break;
+						default:
+							throw new Exception("unknown constant tag: " + tag);
 					}
 				}
 

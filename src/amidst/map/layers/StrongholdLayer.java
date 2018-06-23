@@ -102,7 +102,7 @@ public class StrongholdLayer extends IconLayer {
 		
 		// TODO: Replace this system!
 		Biome[] validBiomes = biomesDefault;
-		if (MinecraftUtil.getVersion() == VersionInfo.V1_9pre6 || MinecraftUtil.getVersion() == VersionInfo.V1_0)
+		if (MinecraftUtil.getVersion() == VersionInfo.Vbeta_1_9_pre6 || MinecraftUtil.getVersion() == VersionInfo.V1_0)
 			validBiomes = biomes1_0;
 		if (MinecraftUtil.getVersion() == VersionInfo.V1_1)
 			validBiomes = biomes1_1;
